@@ -85,8 +85,7 @@ pixelDict = {}
 
 # constants
 reference = 'J:91257'
-assayType = '1'		# InSitu Assay
-copyrightNote = 'Reprinted by permission from <A HREF="http://www.nature.com/">Nature</A> (Gitton et al, Nature 2002 Dec 5;420(6915):586-590) copyright (2002) Macmillan Publishers Ltd.'
+copyrightNote = ''
 paneLabel = ''
 imageNote = ''
 
@@ -234,6 +233,9 @@ process(inInSituFile2, 20, 23)
 exit(0)
 
 # $Log$
+# Revision 1.2  2004/09/16 13:18:37  lec
+# TR 6118
+#
 # Revision 1.1  2004/09/09 15:18:14  lec
 # TR 6118
 #
