@@ -199,9 +199,9 @@ def process(fp, idx1, idx2):
 	    continue
 
 	print str(imageFileLabels)
-	imageLabel = string.join(imageFileLabels, ',')
+	imageLabel = string.join(imageFileLabels, ';')
 	imageLabel = regsub.gsub('.jpg', '', imageLabel)
-	if imageLabel[-1] == ',':
+	if imageLabel[-1] == ';':
 	    imageLabel = imageLabel[:-1]
 
 	if not pixelDict.has_key(imageFile):
@@ -234,6 +234,9 @@ process(inInSituFile2, 20, 23)
 exit(0)
 
 # $Log$
+# Revision 1.4  2004/09/16 16:04:20  lec
+# TR 6118
+#
 # Revision 1.3  2004/09/16 13:47:43  lec
 # TR 6118
 #
