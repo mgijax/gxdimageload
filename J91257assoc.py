@@ -119,7 +119,7 @@ pixelDict = {}   # dictionary of pix file name/pix id
 imageDict = {}	 # dictionary of pix id/image pane key
 mgiProbe = {}	 # dictionary of Probe Name/Probe key
 
-loaddate = loaddate.loaddate
+loaddate = loadlib.loaddate
 
 # Purpose: displays correct usage of this program
 # Returns: nothing
@@ -367,7 +367,7 @@ def bcpFiles():
 # Effects:  verifies and processes each line in the input file
 # Throws:   nothing
 
-def process(fp, idx1, idx2):
+def process(fp):
 
     # For each line in the input file
 
@@ -389,39 +389,37 @@ def process(fp, idx1, idx2):
 
         try:
             mtf = tokens[1]
-	    imageFileNames = tokens[idx1:idx2]
+	    imageFile = tokens[2]
 
         except:
             print 'Invalid Line (%d): %s\n' % (lineNum, line)
 
 	lineNum = lineNum + 1
 
-	for i in imageFileNames:
+	if not pixelDict.has_key(imageFile):
+	    print 'Cannot Find Image (%d): %s\n' % (lineNum, imageFile)
+	    continue
 
-	    if not pixelDict.has_key(i):
-	        print 'Cannot Find Image (%d): %s\n' % (lineNum, i)
-	        continue
+        probeName = 'MTF#' + mtf
+	probeKey = mgiProbe[probeName]
+        imagePaneKey = verifyImage(pixelDict[imageFile], lineNum)
 
-            probeName = 'MTF#' + mtf
-	    probeKey = mgiProbe[probeName]
-            imagePaneKey = verifyImage(pixelDict[i], lineNum)
+        if imagePaneKey == 0:
+            # set error flag to true
+            error = 1
 
-            if imagePaneKey == 0:
-                # set error flag to true
-                error = 1
+        # if errors, continue to next record
+        if error:
+            continue
 
-            # if errors, continue to next record
-            if error:
-                continue
+        # if no errors, process
 
-            # if no errors, process
+	# for each Assay of the Probe
+	#    for each Specimen of each Assay
+	#        for each Result of each Specimen
+	#            associate the Image Pane with the Result
 
-	    # for each Assay of the Probe
-	    #    for each Specimen of each Assay
-	    #        for each Result of each Specimen
-	    #            associate the Image Pane with the Result
-
-	    results = db.sql('select i._Result_key ' + \
+	results = db.sql('select i._Result_key ' + \
 		        'from GXD_Assay a, GXD_ProbePrep p, GXD_Specimen s, GXD_InSituResult i ' + \
 		        'where a._Refs_key = %s ' % (refKey) + \
 		        'and a._ProbePrep_key = p._ProbePrep_key ' + \
@@ -429,14 +427,13 @@ def process(fp, idx1, idx2):
 		        'and a._Assay_key = s._Assay_key ' + \
 		        'and s._Specimen_key = i._Specimen_key', 'auto')
 
-	    for r in results:
-	        outAssocFile.write(str(r['_Result_key']) + TAB + \
+	for r in results:
+	    outAssocFile.write(str(r['_Result_key']) + TAB + \
 	            str(imagePaneKey) + TAB + \
 	            loaddate + TAB + loaddate + CRT)
 
-    #	end of "for line in inImageFile.readlines():"
+    #	end of "for line in fp.readlines():"
 
-    bcpFiles()
     return
 
 #
@@ -445,12 +442,16 @@ def process(fp, idx1, idx2):
 
 init()
 verifyMode()
-process(inInSituFile1, 19, 21)
-process(inInSituFile2, 20, 23)
+process(inInSituFile1)
+process(inInSituFile2)
+bcpFiles()
 exit(0)
 
 #
 # $Log$
+# Revision 1.3  2004/09/16 13:21:37  lec
+# TR 6118
+#
 # Revision 1.1  2004/09/09 15:18:15  lec
 # TR 6118
 #
