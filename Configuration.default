@@ -14,7 +14,7 @@ setenv GXDIMGLOADINSTALLDIR	/usr/local/mgi/dataload/gxdimageload
 setenv GXDIMGLOADSYSTEMDOCDIR	$GXDIMGLOADINSTALLDIR/system_docs
 
 # data directory
-setenv GXDIMGLOADDATADIR	$GXDIMGLOADINSTALLDIR/data/
+setenv GXDIMGLOADDATADIR	$GXDIMGLOADINSTALLDIR/data
 
 # SYBASE
 setenv SYBASE	/opt/sybase/12.5
