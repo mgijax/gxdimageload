@@ -396,6 +396,9 @@ def process():
 
 	for img in [imageFileName1, imageFileName2]:
 
+	    if len(img) == 0:
+		continue
+
 	    if not pixelDict.has_key(img):
 	        print 'Cannot Find Image (%d): %s\n' % (lineNum, img)
 	        continue
@@ -450,6 +453,9 @@ exit(0)
 
 #
 # $Log$
+# Revision 1.2  2003/07/17 17:25:35  lec
+# TR 4800
+#
 # Revision 1.1  2003/07/17 15:05:16  lec
 # TR 4800
 #

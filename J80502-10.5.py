@@ -294,6 +294,9 @@ def process():
 	if len(mouseGene) == 0:
 	    continue
 
+	if len(imageFileName) == 0:
+	    continue
+
 	if not pixelDict.has_key(imageFileName):
 	    print 'Cannot Find Image (%d): %s\n' % (lineNum, imageFileName)
 	    continue
@@ -328,6 +331,9 @@ process()
 exit(0)
 
 # $Log$
+# Revision 1.3  2003/07/17 17:25:34  lec
+# TR 4800
+#
 # Revision 1.2  2003/07/17 13:20:17  lec
 # TR 4800
 #
