@@ -291,7 +291,7 @@ def process():
             specimen = tokens[4]
             tissueQuality = tokens[5]
             overallExpression = tokens[6]
-            results = tokens[7:49]
+            results = tokens[7:50]
 	    imageFileName1 = tokens[50]
 	    imageFileName2 = tokens[51]
 
@@ -344,6 +344,9 @@ process()
 exit(0)
 
 # $Log$
+# Revision 1.4  2003/07/17 18:30:15  lec
+# TR 4800
+#
 # Revision 1.3  2003/07/17 17:25:35  lec
 # TR 4800
 #

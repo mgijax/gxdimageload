@@ -284,7 +284,7 @@ def process():
 	    mouseGene = tokens[1]
 	    accID = tokens[2]
 	    humanGene = tokens[3]
-	    results = tokens[4:14]
+	    results = tokens[4:15]
 	    imageFileName = tokens[15]
 
         except:
@@ -335,6 +335,9 @@ process()
 exit(0)
 
 # $Log$
+# Revision 1.5  2003/07/17 18:30:14  lec
+# TR 4800
+#
 # Revision 1.4  2003/07/17 17:44:53  lec
 # TR 4800
 #
