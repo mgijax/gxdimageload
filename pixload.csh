@@ -61,7 +61,7 @@ echo "starting pix id: " $accID
 
 foreach j ($JPEGDIRECTORY/*.jpg)
 	set n=`basename $j .jpg`
-	echo `basename $j .jpg`
+	echo $n
 	cp $j $PIXELDBDATA/$accID.jpg
 	echo "$n	$accID" >> $OUTPUTFILE
 	set accID=`expr $accID + 1`
@@ -69,7 +69,7 @@ end
 
 foreach j ($JPEGDIRECTORY/*.jpeg)
 	set n=`basename $j .jpeg`
-	echo `basename $j .jpeg`
+	echo $n
 	cp $j $PIXELDBDATA/$accID.jpg
 	echo "$n	$accID" >> $OUTPUTFILE
 	set accID=`expr $accID + 1`
