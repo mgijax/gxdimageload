@@ -232,9 +232,9 @@ def process():
 	value = pixID
 	pixelDict[key] = value
 
-    # For each line in the assay input file
+    # For each line in the input file
 
-    assay = 0
+    lineNum = 0
 
     for line in inInSituFile.readlines():
 
@@ -242,8 +242,8 @@ def process():
         tokens = string.split(line[:-1], TAB)
 
 	# skip first line (header)
-	if assay == 0:
-	    assay = assay + 1
+	if lineNum == 0:
+	    lineNum = lineNum + 1
 	    continue
 
 	# else process an actual data line
@@ -261,9 +261,9 @@ def process():
 	    imageFileName2 = tokens[51]
 
         except:
-            print 'Invalid Line (%d): %s\n' % (assay, line)
+            print 'Invalid Line (%d): %s\n' % (lineNum, line)
 
-	assay = assay + 1
+	lineNum = lineNum + 1
 
 	if len(mouseGene) == 0:
 	    continue
@@ -271,7 +271,7 @@ def process():
 	for img in [imageFileName1, imageFileName2]:
 
 	    if not pixelDict.has_key(img):
-	        print 'Cannot Find Image (%d): %s\n' % (assay, img)
+	        print 'Cannot Find Image (%d): %s\n' % (lineNum, img)
 	        continue
 
 	    (xdim, ydim) = jpeginfo.getDimensions(pixeldatadir + '/' + pixelDict[img] + jpegSuffix)
@@ -299,4 +299,7 @@ process()
 exit(0)
 
 # $Log$
+# Revision 1.1  2003/07/17 13:20:10  lec
+# new
+#
 #
