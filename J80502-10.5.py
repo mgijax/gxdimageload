@@ -91,7 +91,7 @@ createdBy = os.environ['CREATEDBY']
 copyrightNote = 'This image is from Reymond A, Nature 2002 Dec 5;420(6915):582-6, and is displayed with the permission of <A HREF="http://www.nature.com/">The Nature Publishing Group</A> who owns the Copyright.'
 fieldType = 'Bright field'
 paneLabel = ''
-multImageNote = 'Several probes were used to assay for this gene with repeatable results.  This image is attached to each assay.'
+imageNote = ''
 
 # Purpose: displays correct usage of this program
 # Returns: nothing
@@ -210,32 +210,6 @@ def init():
 
     return
 
-# Purpose:  determines a Marker has been Assayed using more than one Probe
-# Returns:  1 if the Marker has been Assayed using more than one Probe
-# 	    0 if the Marker has not been Assayed using more than one Probe
-# Assumes:  nothing
-# Effects:  nothing
-# Throws:   nothing
-
-def isMultiProbe(accID):
-
-    results = db.sql('select a._Assay_key ' + \
-	'from GXD_Assay a, GXD_ProbePrep pp, PRB_Probe p, BIB_Acc_View b, MRK_Acc_View ma ' + \
-	'where a.createdBy = "%s" ' % (createdBy) + \
-	'and a._AssayType_key = %s ' % (assayType) + \
-	'and a._Refs_key = b._Object_key ' + \
-	'and b.accID = "%s" ' % (reference) + \
-	'and a._Marker_key = ma._Object_key ' + \
-	'and ma.accID = "%s" ' % (accID) + \
-	'and a._ProbePrep_key = pp._ProbePrep_key ' + \
-	'and pp._Probe_key = p._Probe_key ' + \
-	'and p.DNAType != "primer"', 'auto')
-
-    if len(results) > 1:
-	return 1
-    else:
-	return 0
-
 # Purpose:  processes data
 # Returns:  nothing
 # Assumes:  nothing
@@ -290,11 +264,6 @@ def process():
 	    print 'Cannot Find Image (%d): %s\n' % (assay, imageFileName)
 	    continue
 
-	if isMultiProbe(accID) == 1:
-	    imageNote = multImageNote
-	else:
-	    imageNote = ''
-
 	(xdim, ydim) = jpeginfo.getDimensions(pixeldatadir + '/' + pixelDict[imageFileName] + jpegSuffix)
 
 	imageFile.write(reference + TAB + \
@@ -320,4 +289,7 @@ process()
 exit(0)
 
 # $Log$
+# Revision 1.1  2003/07/16 19:41:10  lec
+# TR 4800
+#
 #

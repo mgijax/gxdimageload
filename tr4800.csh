@@ -20,9 +20,13 @@ touch $LOG
 date > $LOG
  
 #pixload.csh ${GXDIMGLOADDATADIR}/tr4800/images/10.5dpc ${GXDIMGLOADDATADIR}/pix10.5.txt >>& $LOG
-pixload.csh ${GXDIMGLOADDATADIR}/tr4800/images/14.5dpc ${GXDIMGLOADDATADIR}/pix14.5.txt >>& $LOG
+#pixload.csh ${GXDIMGLOADDATADIR}/tr4800/images/14.5dpc ${GXDIMGLOADDATADIR}/pix14.5.txt >>& $LOG
+
 #J80502-10.5.py -S${DBSERVER} -D${DBNAME} -U${DBUSER} -P${DBPASSWORDFILE} >>& $LOG
 #gxdimageload.py -S${DBSERVER} -D${DBNAME} -U${DBUSER} -P${DBPASSWORDFILE} -M${LOADMODE} >>& $LOG
+
+J80502-14.5.py -S${DBSERVER} -D${DBNAME} -U${DBUSER} -P${DBPASSWORDFILE} >>& $LOG
+gxdimageload.py -S${DBSERVER} -D${DBNAME} -U${DBUSER} -P${DBPASSWORDFILE} -M${LOADMODE} >>& $LOG
 
 date >> $LOG
 
