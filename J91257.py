@@ -29,12 +29,13 @@
 #       E13.5_In_Situ_Coding_Table.txt, a tab-delimited file in the format:
 #               field 1: Gene Symbol
 #               field 2: MTF# (ignore)
-#               field 3: Image file name
+#               field 3: Image label
 #               field 4: Informativity (ignore)
 #               field 5: E-expression
 #               field 6: E-specificity
 #               field 7: E-CNS
 #               field 8-19: remaining expression
+#		field 20-21: Image files
 #
 # Outputs:
 #
@@ -57,7 +58,6 @@
 import sys
 import os
 import string
-import getopt
 import mgi_utils
 import jpeginfo
 
@@ -68,23 +68,24 @@ CRT = '\n'		# carriage return/newline
 NULL = ''
 
 inInSituFile1 = ''	# file descriptor
+inInSituFile2 = ''	# file descriptor
 inPixFile = ''		# file descriptor
 
 datadir = os.environ['GXDIMGLOADDATADIR']
 pixeldatadir = os.environ['PIXELDBDATA']
 
 inInSituFile1Name = datadir + '/tr6118/E13.5_In_Situ_Coding_Table.txt'
+inInSituFile2Name = datadir + '/tr6118/P0_In_Situ_Coding_Table.txt'
 inPixFileName = datadir + '/pix91257.txt'
 imageFileName = datadir + '/image.txt'
 paneFileName = datadir + '/imagepane.txt'
 imageFile = ''
 paneFile = ''
+pixelDict = {}
 
 # constants
-jpegSuffix = '.jpg'
 reference = 'J:91257'
 assayType = '1'		# InSitu Assay
-createdBy = os.environ['CREATEDBY']
 copyrightNote = 'Reprinted by permission from <A HREF="http://www.nature.com/">Nature</A> (Gitton et al, Nature 2002 Dec 5;420(6915):586-590) copyright (2002) Macmillan Publishers Ltd.'
 paneLabel = ''
 imageNote = ''
@@ -103,6 +104,16 @@ def exit(
     if message is not None:
         sys.stderr.write('\n' + str(message) + '\n')
  
+    try:
+	inInSituFile1.close()
+	inInSituFile2.close()
+	inPixFile.close()
+	imageFile.close()
+	paneFile.close()
+
+    except:
+	pass
+
     sys.exit(status)
  
 # Purpose: initialize
@@ -113,12 +124,17 @@ def exit(
 # Throws: nothing
 
 def init():
-    global inInSituFile1, inPixFile, imageFile, paneFile
+    global inInSituFile1, inInSituFile2, inPixFile, imageFile, paneFile, pixelDict
  
     try:
         inInSituFile1 = open(inInSituFile1Name, 'r')
     except:
         exit(1, 'Could not open file %s\n' % inInSituFile1Name)
+
+    try:
+        inInSituFile2 = open(inInSituFile2Name, 'r')
+    except:
+        exit(1, 'Could not open file %s\n' % inInSituFile2Name)
 
     try:
         inPixFile = open(inPixFileName, 'r')
@@ -137,14 +153,6 @@ def init():
 
     return
 
-# Purpose:  processes data
-# Returns:  nothing
-# Assumes:  nothing
-# Effects:  writes data to output files
-# Throws:   nothing
-
-def process():
-
     # pixFileName:pixID mapping
     pixelDict = {}
     for line in inPixFile.readlines():
@@ -154,12 +162,21 @@ def process():
 	key = pixFileName
 	value = pixID
 	pixelDict[key] = value
+    inPixFile.close()
+
+# Purpose:  processes data
+# Returns:  nothing
+# Assumes:  nothing
+# Effects:  writes data to output files
+# Throws:   nothing
+
+def process(fp, idx1, idx2):
 
     # For each line in the input file
 
     lineNum = 0
 
-    for line in inInSituFile1.readlines():
+    for line in fp.readlines():
 
         # Split the line into tokens
         tokens = string.split(line[:-1], TAB)
@@ -172,55 +189,52 @@ def process():
 	# else process an actual data line
 
         try:
-#            mouseGene = tokens[0]
-#            mtf = tokens[1]
-	    imageFileName = tokens[2]
-#               field 4: Informativity (ignore)
-#            eExpression = tokens[4]
-#            eSpecificity = tokens[5]
-#            eCNS = tokens[6]
-#            eResults = tokens[7:19]
-
+	    imageLabel = tokens[2]
+            imageFileNames = tokens[idx1:idx2]
         except:
             print 'Invalid Line (%d): %s\n' % (lineNum, line)
 
 	lineNum = lineNum + 1
 
-	if len(imageFileName) == 0:
+	if len(imageLabel) == 0:
 	    continue
 
-	i = string.strip(imageFileName)
+	for i in imageFileNames:
 
-	if len(i) == 0:
-	    continue
+	    if len(i) == 0:
+		continue
 
-	if not pixelDict.has_key(i):
-	    print 'Cannot Find Image (%d): %s\n' % (lineNum, i)
-	    continue
+	    if not pixelDict.has_key(i):
+	        print 'Cannot Find Image (%d): %s\n' % (lineNum, i)
+	        continue
 
-	  # get x and y image dimensions
+	    # get x and y image dimensions
 
-	(xdim, ydim) = jpeginfo.getDimensions(pixeldatadir + '/' + pixelDict[i] + jpegSuffix)
+	    (xdim, ydim) = jpeginfo.getDimensions(pixeldatadir + '/' + pixelDict[i])
 
-	imageFile.write(reference + TAB + \
-	      pixelDict[i] + TAB + \
-	      str(xdim) + TAB + \
-	      str(ydim) + TAB + \
-	      i + TAB + \
-	      copyrightNote + TAB + \
-	      imageNote + CRT)
+	    imageFile.write(reference + TAB + \
+	          pixelDict[i] + TAB + \
+	          str(xdim) + TAB + \
+	          str(ydim) + TAB + \
+	          imageLabel + TAB + \
+	          copyrightNote + TAB + \
+	          imageNote + CRT)
 
-	paneFile.write(pixelDict[i] + TAB + paneLabel + CRT)
+	    paneFile.write(pixelDict[i] + TAB + paneLabel + CRT)
 
-    # end of "for line in inPixFile.readlines():"
+    # end of "for line in fp.readlines():"
 
 #
 # Main
 #
 
 init()
-process()
+process(inInSituFile1, 19, 21)
+process(inInSituFile2, 20, 23)
 exit(0)
 
 # $Log$
+# Revision 1.1  2004/09/09 15:18:14  lec
+# TR 6118
+#
 #

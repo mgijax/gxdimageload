@@ -86,10 +86,12 @@ errorFile = ''		# error file descriptor
 
 # input files
 
-inInSituFile = ''	# file descriptor
+inInSituFile1 = ''	# file descriptor
+inInSituFile2 = ''	# file descriptor
 inPixFile = ''		# file descriptor
 
-inInSituFileName = datadir + '/tr6118/E13.5_In_Situ_Coding_Table.txt'
+inInSituFile1Name = datadir + '/tr6118/E13.5_In_Situ_Coding_Table.txt'
+inInSituFile2Name = datadir + '/tr6118/P0_In_Situ_Coding_Table.txt'
 inPixFileName = datadir + '/pix91257.txt'
 
 # output files
@@ -112,7 +114,8 @@ refKey = ''
 pixPrefix = 'PIX:'
 pixMgiType = 'Image'
 
-imageDict = {}	 # dictionaries to cache data for quicker lookup
+pixelDict = {}   # dictionary of pix file name/pix id
+imageDict = {}	 # dictionary of pix id/image pane key
 mgiProbe = {}	 # dictionary of Probe Name/Probe key
 
 cdate = mgi_utils.date('%m/%d/%Y')	# current date
@@ -151,6 +154,10 @@ def exit(
         errorFile.write('\n\nEnd Date/Time: %s\n' % (mgi_utils.date()))
         diagFile.close()
         errorFile.close()
+	inInSituFile1.close()
+	inInSituFile2.close()
+	inPixFile.close()
+	outAssocFile.close()
     except:
         pass
 
@@ -167,7 +174,7 @@ def exit(
 
 def init():
     global diagFile, errorFile, errorFileName, diagFileName, passwordFileName
-    global inInSituFile, inPixFile
+    global inInSituFile1, inInSituFile2, inPixFile, pixelDict
     global mode, mgiProbe, refKey
     global outAssocFile
  
@@ -226,9 +233,14 @@ def init():
     # Input Files
 
     try:
-        inInSituFile = open(inInSituFileName, 'r')
+        inInSituFile1 = open(inInSituFile1Name, 'r')
     except:
-        exit(1, 'Could not open file %s\n' % inInSituFileName)
+        exit(1, 'Could not open file %s\n' % inInSituFile1Name)
+
+    try:
+        inInSituFile2 = open(inInSituFile2Name, 'r')
+    except:
+        exit(1, 'Could not open file %s\n' % inInSituFile2Name)
 
     try:
         inPixFile = open(inPixFileName, 'r')
@@ -260,6 +272,14 @@ def init():
         mgiProbe[r['name']] = r['_Probe_key']
 
     refKey = loadlib.verifyReference(reference, 0, errorFile)
+
+    for line in inPixFile.readlines():
+	tokens = string.split(line[:-1], TAB)
+	pixFileName = tokens[0]
+	pixID = tokens[1]
+	key = pixFileName
+	value = pixID
+	pixelDict[key] = value
 
     return
 
@@ -330,12 +350,10 @@ def bcpFiles():
 
     bcpI = 'cat %s | bcp %s..' % (passwordFileName, db.get_sqlDatabase())
     bcpII = '-c -t\"%s' % (bcpdelim) + '" -S%s -U%s' % (db.get_sqlServer(), db.get_sqlUser())
-    truncateDB = 'dump transaction %s with truncate_only' % (db.get_sqlDatabase())
 
     bcp1 = '%s%s in %s %s' % (bcpI, assocTable, outAssocFileName, bcpII)
     diagFile.write('%s\n' % bcp1)
     os.system(bcp1)
-    db.sql(truncateDB, None)
 
     # update statistics
     db.sql('update statistics %s' % (assocTable), None)
@@ -348,23 +366,13 @@ def bcpFiles():
 # Effects:  verifies and processes each line in the input file
 # Throws:   nothing
 
-def process():
-
-    pixelDict = {}
-
-    for line in inPixFile.readlines():
-	tokens = string.split(line[:-1], TAB)
-	pixFileName = tokens[0]
-	pixID = tokens[1]
-	key = pixFileName
-	value = pixID
-	pixelDict[key] = value
+def process(fp, idx1, idx2):
 
     # For each line in the input file
 
     lineNum = 0
 
-    for line in inInSituFile.readlines():
+    for line in fp.readlines():
 
 	error = 0
 
@@ -379,14 +387,8 @@ def process():
 	# else process an actual data line
 
         try:
-#            mouseGene = tokens[0]
             mtf = tokens[1]
-	    imageFileName = tokens[2]
-#               field 4: Informativity (ignore)
-#            eExpression = tokens[4]
-#            eSpecificity = tokens[5]
-#            eCNS = tokens[6]
-#            eResults = tokens[7:19]
+	    imageFileNames = tokens[idx1:idx2]
 
         except:
             print 'Invalid Line (%d): %s\n' % (lineNum, line)
@@ -442,9 +444,13 @@ def process():
 
 init()
 verifyMode()
-process()
+process(inInSituFile1, 19, 21)
+process(inInSituFile2, 20, 23)
 exit(0)
 
 #
 # $Log$
+# Revision 1.1  2004/09/09 15:18:15  lec
+# TR 6118
+#
 #

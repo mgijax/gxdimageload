@@ -55,5 +55,5 @@ setenv DBPASSWORDFILE	$DBUTILITIESPATH/.mgd_dbo_password
 setenv LOADMODE		load
 
 # Created By
-setenv CREATEDBY	dph
+setenv CREATEDBY	jfinger
 
