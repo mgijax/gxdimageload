@@ -23,6 +23,18 @@
 #
 # Inputs:
 #
+#	probe_table.txt, a tab-delimited file in the format:
+#		field 1: Human Gene
+#		field 2: Mouse Gene
+#               field 3: MGI Marker Accession ID
+#		field 4: Clone Name
+#		field 5: Clone Origin
+#		field 6: Clone Acc ID
+#		field 7: Clone Mapping
+#		field 8: Clone MGI ID
+#		field 9: Clone Library ID
+#		field 10: Clone Library Name
+#
 #       pix10.5.txt, a tab-delimited file in the format:
 #		field 1: Image File Name
 #		field 2: PIX ID (####)
@@ -69,12 +81,14 @@ NULL = ''
 
 inInSituFile = ''	# file descriptor
 inPixFile = ''		# file descriptor
+inProbeFile = ''	# file descriptor
 
 datadir = os.environ['GXDIMGLOADDATADIR']
 pixeldatadir = os.environ['PIXELDBDATA']
 
 inInSituFileName = datadir + '/tr4800/data/E10.5_In_situ.txt'
 inPixFileName = datadir + '/pix10.5.txt'
+inProbeFileName = datadir + '/tr4800/data/probe_table.txt'
 imageFileName = datadir + '/image.txt'
 paneFileName = datadir + '/imagepane.txt'
 imageFile = ''
@@ -91,7 +105,7 @@ createdBy = os.environ['CREATEDBY']
 copyrightNote = 'This image is from Reymond A, Nature 2002 Dec 5;420(6915):582-6, and is displayed with the permission of <A HREF="http://www.nature.com/">The Nature Publishing Group</A> who owns the Copyright.'
 fieldType = 'Bright field'
 paneLabel = ''
-imageNote = ''
+multiProbeNote = 'Several probes were used to assay for this gene with repeatable results.  This image is attached to each assay.'
 
 # Purpose: displays correct usage of this program
 # Returns: nothing
@@ -132,7 +146,7 @@ def exit(
 # Throws: nothing
 
 def init():
-    global diagFile, inInSituFile, inPixFile, imageFile, paneFile
+    global diagFile, inInSituFile, inPixFile, inProbeFile, imageFile, paneFile
  
     try:
         optlist, args = getopt.getopt(sys.argv[1:], 'S:D:U:P:')
@@ -188,6 +202,11 @@ def init():
         exit(1, 'Could not open file %s\n' % inPixFileName)
 
     try:
+        inProbeFile = open(inProbeFileName, 'r')
+    except:
+        exit(1, 'Could not open file %s\n' % inProbeFileName)
+
+    try:
         imageFile = open(imageFileName, 'w')
     except:
         exit(1, 'Could not open file %s\n' % imageFileName)
@@ -219,6 +238,7 @@ def init():
 def process():
 
     pixelDict = {}
+    probeDict = {}
 
     for line in inPixFile.readlines():
 	tokens = string.split(line[:-1], TAB)
@@ -228,9 +248,23 @@ def process():
 	value = pixID
 	pixelDict[key] = value
 
-    # For each line in the assay input file
+    for line in inProbeFile.readlines():
+	tokens = string.split(line[:-1], TAB)
+	mgiID = tokens[2]
+	probeID = tokens[7]
 
-    assay = 0
+	if len(mgiID) == 0:
+	    continue
+
+	key = mgiID
+	value = probeID
+	if not probeDict.has_key(key):
+	    probeDict[key] = []
+        probeDict[key].append(value)
+
+    # For each line in the input file
+
+    lineNum = 0
 
     for line in inInSituFile.readlines():
 
@@ -238,8 +272,8 @@ def process():
         tokens = string.split(line[:-1], TAB)
 
 	# skip first line (header)
-	if assay == 0:
-	    assay = assay + 1
+	if lineNum == 0:
+	    lineNum = lineNum + 1
 	    continue
 
 	# else process an actual data line
@@ -253,18 +287,23 @@ def process():
 	    imageFileName = tokens[15]
 
         except:
-            print 'Invalid Line (%d): %s\n' % (assay, line)
+            print 'Invalid Line (%d): %s\n' % (lineNum, line)
 
-	assay = assay + 1
+	lineNum = lineNum + 1
 
 	if len(mouseGene) == 0:
 	    continue
 
 	if not pixelDict.has_key(imageFileName):
-	    print 'Cannot Find Image (%d): %s\n' % (assay, imageFileName)
+	    print 'Cannot Find Image (%d): %s\n' % (lineNum, imageFileName)
 	    continue
 
 	(xdim, ydim) = jpeginfo.getDimensions(pixeldatadir + '/' + pixelDict[imageFileName] + jpegSuffix)
+
+        if len(probeDict[accID]) > 1:
+	    imageNote = multiProbeNote
+        else:
+	    imageNote = ''
 
 	imageFile.write(reference + TAB + \
 	    pixelDict[imageFileName] + TAB + \
@@ -289,6 +328,9 @@ process()
 exit(0)
 
 # $Log$
+# Revision 1.2  2003/07/17 13:20:17  lec
+# TR 4800
+#
 # Revision 1.1  2003/07/16 19:41:10  lec
 # TR 4800
 #

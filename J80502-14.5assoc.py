@@ -49,7 +49,6 @@
 #       BCP files:
 #
 #       GXD_InSituResultImage.bcp	Image Association records
-#	IMG_ImageNote.bcp		Image Notes
 #
 #       Diagnostics file of all input parameters and SQL commands
 #       Error file
@@ -98,13 +97,10 @@ inPixFileName = datadir + '/pix14.5.txt'
 # output files
 
 outAssocFile = ''	# file descriptor
-outNoteFile = ''	# file descriptor
 
 assocTable = 'GXD_InSituResultImage'
-noteTable = 'IMG_ImageNote'
 
 outAssocFileName = datadir + '/' + assocTable + '.bcp'
-outNoteFileName = datadir + '/' + noteTable + '.bcp'
 
 diagFileName = ''	# diagnostic file name
 errorFileName = ''	# error file name
@@ -112,7 +108,6 @@ passwordFileName = ''	# password file name
 
 mode = ''		# processing mode (load, preview)
 
-multiProbeNote = 'Several probes were used to assay for this gene with repeatable results.  This image is attached to each assay.'
 reference = 'J:80502'
 createdBy = os.environ['CREATEDBY']
 pixPrefix = 'PIX:'
@@ -175,7 +170,7 @@ def init():
     global diagFile, errorFile, errorFileName, diagFileName, passwordFileName
     global inInSituFile, inPixFile
     global mode
-    global outAssocFile, outNoteFile
+    global outAssocFile
  
     try:
         optlist, args = getopt.getopt(sys.argv[1:], 'S:D:U:P:M:')
@@ -247,11 +242,6 @@ def init():
         outAssocFile = open(outAssocFileName, 'w')
     except:
         exit(1, 'Could not open file %s\n' % outAssocFileName)
-
-    try:
-        outNoteFile = open(outNoteFileName, 'w')
-    except:
-        exit(1, 'Could not open file %s\n' % outNoteFileName)
 
     # Log all SQL
     db.set_sqlLogFunction(db.sqlLogAll)
@@ -333,23 +323,18 @@ def bcpFiles():
         return
 
     outAssocFile.close()
-    outNoteFile.close()
 
     bcpI = 'cat %s | bcp %s..' % (passwordFileName, db.get_sqlDatabase())
     bcpII = '-c -t\"%s' % (bcpdelim) + '" -S%s -U%s' % (db.get_sqlServer(), db.get_sqlUser())
     truncateDB = 'dump transaction %s with truncate_only' % (db.get_sqlDatabase())
 
     bcp1 = '%s%s in %s %s' % (bcpI, assocTable, outAssocFileName, bcpII)
-    bcp2 = '%s%s in %s %s' % (bcpI, noteTable, outNoteFileName, bcpII)
-
-    for bcpCmd in [bcp1, bcp2]:
-       diagFile.write('%s\n' % bcpCmd)
-       os.system(bcpCmd)
-       db.sql(truncateDB, None)
+    diagFile.write('%s\n' % bcp1)
+    os.system(bcp1)
+    db.sql(truncateDB, None)
 
     # update statistics
     db.sql('update statistics %s' % (assocTable), None)
-    db.sql('update statistics %s' % (noteTable), None)
 
     return
 
@@ -362,7 +347,6 @@ def bcpFiles():
 def process():
 
     pixelDict = {}
-    imageCounterDict = {}
 
     for line in inPixFile.readlines():
 	tokens = string.split(line[:-1], TAB)
@@ -450,17 +434,7 @@ def process():
 	            str(imagePaneKey) + TAB + \
 	            cdate + TAB + cdate + CRT)
 
-            if imageCounterDict.has_key(imageKey):
-	        imageCounterDict[imageKey] = imageCounterDict[imageKey] + 1
-            else:
-	        imageCounterDict[imageKey] = 1
-
     #	end of "for line in inImageFile.readlines():"
-
-    # if any image has been used > 1, then add a special note to the image record
-    for ikey in imageCounterDict.keys():
-	if imageCounterDict[ikey] > 1:
-            outNoteFile.write(str(imageKey) + TAB + "1" + TAB + multiProbeNote + TAB + cdate + TAB + cdate + CRT)
 
     bcpFiles()
     return
@@ -476,4 +450,7 @@ exit(0)
 
 #
 # $Log$
+# Revision 1.1  2003/07/17 15:05:16  lec
+# TR 4800
+#
 #
