@@ -69,6 +69,7 @@ import getopt
 import db
 import mgi_utils
 import accessionlib
+import loadlib
 
 #globals
 
@@ -118,7 +119,7 @@ pixelDict = {}   # dictionary of pix file name/pix id
 imageDict = {}	 # dictionary of pix id/image pane key
 mgiProbe = {}	 # dictionary of Probe Name/Probe key
 
-cdate = mgi_utils.date('%m/%d/%Y')	# current date
+loaddate = loaddate.loaddate
 
 # Purpose: displays correct usage of this program
 # Returns: nothing
@@ -395,43 +396,43 @@ def process(fp, idx1, idx2):
 
 	lineNum = lineNum + 1
 
-	if not pixelDict.has_key(imageFileName):
-	    print 'Cannot Find Image (%d): %s\n' % (lineNum, imageFileName)
-	    continue
+	for i in imageFileNames:
 
-        probeName = 'MTF#' + mtf
-	probeKey = mgiProbe[probeName]
-        imagePaneKey = verifyImage(pixelDict[imageFileName], lineNum)
+	    if not pixelDict.has_key(i):
+	        print 'Cannot Find Image (%d): %s\n' % (lineNum, i)
+	        continue
 
-        if imagePaneKey == 0:
-            # set error flag to true
-            error = 1
+            probeName = 'MTF#' + mtf
+	    probeKey = mgiProbe[probeName]
+            imagePaneKey = verifyImage(pixelDict[i], lineNum)
 
-        # if errors, continue to next record
-        if error:
-            continue
+            if imagePaneKey == 0:
+                # set error flag to true
+                error = 1
 
-        # if no errors, process
+            # if errors, continue to next record
+            if error:
+                continue
 
-	# for each Assay of the Probe
-	#    for each Specimen of each Assay
-	#        for each Result of each Specimen
-	#            associate the Image Pane with the Result
+            # if no errors, process
 
-	results = db.sql('select i._Result_key ' + \
-		    'from GXD_Assay a, GXD_ProbePrep p, GXD_Specimen s, GXD_InSituResult i ' + \
-		    'where a._Refs_key = %s ' % (refKey) + \
-		    'and a._ProbePrep_key = p._ProbePrep_key ' + \
-		    'and p._Probe_key = %s ' % (probeKey) + \
-		    'and a._Assay_key = s._Assay_key ' + \
-		    'and s._Specimen_key = i._Specimen_key', 'auto')
+	    # for each Assay of the Probe
+	    #    for each Specimen of each Assay
+	    #        for each Result of each Specimen
+	    #            associate the Image Pane with the Result
 
-	for r in results:
-	    resultKey = r['_Result_key']
+	    results = db.sql('select i._Result_key ' + \
+		        'from GXD_Assay a, GXD_ProbePrep p, GXD_Specimen s, GXD_InSituResult i ' + \
+		        'where a._Refs_key = %s ' % (refKey) + \
+		        'and a._ProbePrep_key = p._ProbePrep_key ' + \
+		        'and p._Probe_key = %s ' % (probeKey) + \
+		        'and a._Assay_key = s._Assay_key ' + \
+		        'and s._Specimen_key = i._Specimen_key', 'auto')
 
-	    outAssocFile.write(str(resultKey) + TAB + \
-	        str(imagePaneKey) + TAB + \
-	        cdate + TAB + cdate + CRT)
+	    for r in results:
+	        outAssocFile.write(str(r['_Result_key']) + TAB + \
+	            str(imagePaneKey) + TAB + \
+	            loaddate + TAB + loaddate + CRT)
 
     #	end of "for line in inImageFile.readlines():"
 
