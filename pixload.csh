@@ -96,6 +96,13 @@ foreach j ($JPGDIRECTORY/e*.jpg)
 	echo "$n	$accID" >> $OUTPUTFILE
 	set accID=`expr $accID + 1`
 end
+foreach j ($JPGDIRECTORY/p*.jpg)
+	set n=`basename $j .jpg`
+	echo $n
+	cp $j $PIXELDBDATA/$accID.jpg
+	echo "$n	$accID" >> $OUTPUTFILE
+	set accID=`expr $accID + 1`
+end
 
 rm -rf $PIXELDBCOUNTER
 echo $accID > $PIXELDBCOUNTER

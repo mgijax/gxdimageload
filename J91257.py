@@ -70,6 +70,7 @@ NULL = ''
 
 inInSituFile1 = ''	# file descriptor
 inInSituFile2 = ''	# file descriptor
+inInSituFile3 = ''	# file descriptor
 inPixFile = ''		# file descriptor
 
 datadir = os.environ['GXDIMGLOADDATADIR']
@@ -198,7 +199,16 @@ def process(fp, idx1):
 	if len(imageFile) == 0:
 	    continue
 
-        imageFileLabel = tokens[idx1]
+        try:
+	    imageFileLabel = tokens[idx1]
+	except:
+	    print 'Missing Image Label (%d): %s\n' % (lineNum, imageFile)
+	    continue
+
+        if len(imageFileLabel) == 0:
+	    print 'Missing Image Label (%d): %s\n' % (lineNum, imageFile)
+	    continue
+
 	tokens = string.split(imageFile, '.jpg')
 	imageFile = tokens[0]
 
@@ -243,6 +253,9 @@ process(inInSituFile3, 16)
 exit(0)
 
 # $Log$
+# Revision 1.9  2004/11/19 19:13:44  lec
+# TR 6118
+#
 # Revision 1.8  2004/11/19 19:01:14  lec
 # TR 6118
 #
