@@ -161,7 +161,6 @@ def init():
 	value = pixID
 	pixelDict[key] = value
     inPixFile.close()
-    print str(pixelDict)
 
 # Purpose:  processes data
 # Returns:  nothing
@@ -198,7 +197,6 @@ def process(fp, idx1, idx2):
 	if len(imageFile) == 0:
 	    continue
 
-	print str(imageFileLabels)
 	imageLabel = string.join(imageFileLabels, ';')
 	imageLabel = regsub.gsub('.jpg', '', imageLabel)
 	if imageLabel[-1] == ';':
@@ -234,6 +232,9 @@ process(inInSituFile2, 20, 23)
 exit(0)
 
 # $Log$
+# Revision 1.5  2004/09/16 17:33:46  lec
+# TR 6118
+#
 # Revision 1.4  2004/09/16 16:04:20  lec
 # TR 6118
 #
