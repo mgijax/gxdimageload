@@ -237,9 +237,8 @@ def init():
 
 def process():
 
+    # pixFileName:pixID mapping
     pixelDict = {}
-    probeDict = {}
-
     for line in inPixFile.readlines():
 	tokens = string.split(line[:-1], TAB)
 	pixFileName = tokens[0]
@@ -248,6 +247,8 @@ def process():
 	value = pixID
 	pixelDict[key] = value
 
+    # marker ID:probe ID mapping
+    probeDict = {}
     for line in inProbeFile.readlines():
 	tokens = string.split(line[:-1], TAB)
 	mgiID = tokens[2]
@@ -301,8 +302,11 @@ def process():
 	    print 'Cannot Find Image (%d): %s\n' % (lineNum, imageFileName)
 	    continue
 
+	# get x and y image dimensions
+
 	(xdim, ydim) = jpeginfo.getDimensions(pixeldatadir + '/' + pixelDict[imageFileName] + jpegSuffix)
 
+	# if the gene is assayed using more than one probe, use the special note
         if len(probeDict[accID]) > 1:
 	    imageNote = multiProbeNote
         else:
@@ -331,6 +335,9 @@ process()
 exit(0)
 
 # $Log$
+# Revision 1.4  2003/07/17 17:44:53  lec
+# TR 4800
+#
 # Revision 1.3  2003/07/17 17:25:34  lec
 # TR 4800
 #

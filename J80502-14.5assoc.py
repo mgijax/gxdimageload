@@ -277,7 +277,6 @@ def verifyMode():
 
 # Purpose:  verifies the pix ID
 # Returns:  the primary key of the image pane or 0 if invalid
-# Returns:  the primary key of the image or 0 if invalid
 # Assumes:  nothing
 # Effects:  verifies that the Image Pane exists by checking the imageDict
 #	dictionary for the pix ID or the database.
@@ -309,7 +308,7 @@ def verifyImage(
 	    imagePaneKey = results[0]['_ImagePane_key']
             imageDict[pixID] = imagePaneKey
 
-    return(imageKey, imagePaneKey)
+    return imagePaneKey
 
 # Purpose:  BCPs the data into the database
 # Returns:  nothing
@@ -403,9 +402,9 @@ def process():
 	        print 'Cannot Find Image (%d): %s\n' % (lineNum, img)
 	        continue
 
-            (imageKey, imagePaneKey) = verifyImage(pixelDict[img], lineNum)
+            imagePaneKey = verifyImage(pixelDict[img], lineNum)
 
-            if imageKey == 0 or imagePaneKey == 0:
+            if imagePaneKey == 0:
                 # set error flag to true
                 error = 1
 
@@ -453,6 +452,9 @@ exit(0)
 
 #
 # $Log$
+# Revision 1.3  2003/07/17 17:44:54  lec
+# TR 4800
+#
 # Revision 1.2  2003/07/17 17:25:35  lec
 # TR 4800
 #
