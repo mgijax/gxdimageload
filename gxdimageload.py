@@ -76,7 +76,6 @@ import db
 import mgi_utils
 import accessionlib
 import loadlib
-import gxdloadlib
 
 #globals
 
@@ -131,6 +130,7 @@ imageKey = 0            # IMG_Image._Image_key
 paneKey = 0		# IMG_ImagePane._ImagePane_key
 accKey = 0              # ACC_Accession._Accession_key
 mgiKey = 0              # ACC_AccessionMax.maxNumericPart
+createdByKey = ''
 
 # accession constants
 
@@ -199,7 +199,7 @@ def exit(
 
 def init():
     global diagFile, errorFile, inputFile, errorFileName, diagFileName, passwordFileName
-    global mode
+    global mode, createdByKey
     global outImageFile, outNoteFile, outPaneFile, outAccFile
     global inImageFile, inPaneFile
  
@@ -301,6 +301,8 @@ def init():
     diagFile.write('User: %s\n' % (user))
 
     errorFile.write('Start Date/Time: %s\n\n' % (mgi_utils.date()))
+
+    createdByKey = loadlib.verifyUser(createdBy, 0, errorFile)
 
     return
 
@@ -451,7 +453,9 @@ def processImageFile():
 	    imageMgiTypeKey + TAB + \
 	    accPrivate + TAB + \
 	    accPreferred + TAB + \
-	    loaddate + TAB + loaddate + TAB + loaddate + CRT)
+	    str(createdByKey) + TAB + \
+	    str(createdByKey) + TAB + \
+	    loaddate + TAB + loaddate + CRT)
 
         accKey = accKey + 1
         mgiKey = mgiKey + 1
@@ -465,7 +469,9 @@ def processImageFile():
 	    imageMgiTypeKey + TAB + \
 	    pixPrivate + TAB + \
 	    accPreferred + TAB + \
-	    loaddate + TAB + loaddate + TAB + loaddate + CRT)
+	    str(createdByKey) + TAB + \
+	    str(createdByKey) + TAB + \
+	    loaddate + TAB + loaddate + CRT)
 
         accKey = accKey + 1
 
@@ -514,26 +520,12 @@ def processImagePaneFile():
 
         try:
 	    pixID = tokens[0]
-	    fieldType = tokens[1]
-	    paneLabel = tokens[2]
+	    paneLabel = tokens[1]
         except:
             exit(1, 'Invalid Line (%d): %s\n' % (lineNum, line))
 
-        fieldTypeKey = gxdloadlib.verifyFieldType(fieldType, lineNum, errorFile)
-
-        if fieldTypeKey == 0:
-            # set error flag to true
-            error = 1
-
-        # if errors, continue to next record
-        if error:
-            continue
-
-        # if no errors, process
-
         outPaneFile.write(str(paneKey) + TAB + \
 	    str(imagePix[pixID]) + TAB + \
-	    str(fieldTypeKey) + TAB + \
 	    mgi_utils.prvalue(paneLabel) + TAB + \
 	    loaddate + TAB + loaddate + CRT)
 
@@ -561,6 +553,9 @@ exit(0)
 
 #
 # $Log$
+# Revision 1.2  2003/09/24 12:30:44  lec
+# TR 5154
+#
 # Revision 1.1  2003/07/16 19:41:09  lec
 # TR 4800
 #

@@ -91,7 +91,6 @@ reference = 'J:80501'
 assayType = '1'		# InSitu Assay
 createdBy = os.environ['CREATEDBY']
 copyrightNote = 'Reprinted by permission from <A HREF="http://www.nature.com/">Nature</A> (Gitton et al, Nature 2002 Dec 5;420(6915):586-590) copyright (2002) Macmillan Publishers Ltd.'
-fieldType = 'Bright field'
 paneLabel = ''
 imageNote = ''
 
@@ -290,7 +289,6 @@ def process():
 	      imageNote + CRT)
 
 	  paneFile.write(pixelDict[i] + TAB + \
-	      fieldType + TAB + \
 	      paneLabel + CRT)
 
     # end of "for line in inPixFile.readlines():"
@@ -304,6 +302,9 @@ process()
 exit(0)
 
 # $Log$
+# Revision 1.3  2003/09/24 15:01:43  lec
+# TR 5154
+#
 # Revision 1.2  2003/09/24 14:32:43  lec
 # TR 5154
 #

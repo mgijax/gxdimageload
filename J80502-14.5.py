@@ -107,7 +107,6 @@ reference = 'J:80502'
 assayType = '1'		# InSitu Assay
 createdBy = os.environ['CREATEDBY']
 copyrightNote = 'This image is from Reymond A, Nature 2002 Dec 5;420(6915):582-6, and is displayed with the permission of <A HREF="http://www.nature.com/">The Nature Publishing Group</A> who owns the Copyright.'
-fieldType = 'Bright field'
 paneLabel = ''
 multiProbeNote = 'Several probes were used to assay for this gene with repeatable results.  This image is attached to each assay.'
 
@@ -330,7 +329,6 @@ def process():
 	        imageNote + CRT)
 
 	    paneFile.write(pixelDict[img] + TAB + \
-	        fieldType + TAB + \
 	        paneLabel + CRT)
 
     # end of "for line in inPixFile.readlines():"
@@ -344,6 +342,9 @@ process()
 exit(0)
 
 # $Log$
+# Revision 1.5  2003/07/18 16:17:29  lec
+# TR 4800
+#
 # Revision 1.4  2003/07/17 18:30:15  lec
 # TR 4800
 #
