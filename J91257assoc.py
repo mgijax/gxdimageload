@@ -367,7 +367,7 @@ def bcpFiles():
 # Effects:  verifies and processes each line in the input file
 # Throws:   nothing
 
-def process(fp):
+def process(fp, sLabel):
 
     # For each line in the input file
 
@@ -425,6 +425,7 @@ def process(fp):
 		        'and a._ProbePrep_key = p._ProbePrep_key ' + \
 		        'and p._Probe_key = %s ' % (probeKey) + \
 		        'and a._Assay_key = s._Assay_key ' + \
+			'and s.specimenLabel = "%s" ' % (sLabel) + \
 		        'and s._Specimen_key = i._Specimen_key', 'auto')
 
 	for r in results:
@@ -442,13 +443,16 @@ def process(fp):
 
 init()
 verifyMode()
-process(inInSituFile1)
-process(inInSituFile2)
+process(inInSituFile1, 1)
+process(inInSituFile2, 2)
 bcpFiles()
 exit(0)
 
 #
 # $Log$
+# Revision 1.4  2004/09/16 16:17:51  lec
+# TR 6118
+#
 # Revision 1.3  2004/09/16 13:21:37  lec
 # TR 6118
 #
