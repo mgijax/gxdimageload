@@ -20,13 +20,13 @@ touch $LOG
 date > $LOG
  
 # process the image files; load them into pixeldb and assign pix ids
-pixload.csh ${GXDIMGLOADDATADIR}/tr6118/images ${GXDIMGLOADDATADIR}/pix91257.txt >>& $LOG
+#pixload.csh ${GXDIMGLOADDATADIR}/tr6118/images ${GXDIMGLOADDATADIR}/pix91257.txt >>& $LOG
 
 # generate the MGI-format image files
-J91257.py >>& $LOG
+#J91257.py >>& $LOG
 
 # process the MGI-format image files
-gxdimageload.py -S${DBSERVER} -D${DBNAME} -U${DBUSER} -P${DBPASSWORDFILE} -M${LOADMODE} >>& $LOG
+#gxdimageload.py -S${DBSERVER} -D${DBNAME} -U${DBUSER} -P${DBPASSWORDFILE} -M${LOADMODE} >>& $LOG
 
 # process the associations between assays and images
 J91257assoc.py -S${DBSERVER} -D${DBNAME} -U${DBUSER} -P${DBPASSWORDFILE} -M${LOADMODE} >>& $LOG
