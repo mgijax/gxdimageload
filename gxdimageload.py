@@ -75,6 +75,8 @@ import getopt
 import db
 import mgi_utils
 import accessionlib
+import loadlib
+import gxdloadlib
 
 #globals
 
@@ -143,11 +145,9 @@ pixPrivate = '1'	# Private status for PIX ID (true)
 
 # dictionaries to cache data for quicker lookup
 
-referenceDict = {}      # references
-fieldTypeDict = {}	# pane field type
 imagePix = {}
 
-cdate = mgi_utils.date('%m/%d/%Y')	# current date
+loaddate = loadlib.loaddate
 
 # Purpose: displays correct usage of this program
 # Returns: nothing
@@ -321,64 +321,6 @@ def verifyMode():
     elif mode != 'load':
         exit(1, 'Invalid Processing Mode:  %s\n' % (mode))
 
-
-# Purpose:  verifies the input reference (J:)
-# Returns:  the primary key of the reference or 0 if invalid
-# Assumes:  nothing
-# Effects:  verifies that the Reference exists by checking the referenceDict
-#	dictionary for the reference ID or the database.
-#	writes to the error file if the Reference is invalid.
-#	adds the Reference ID/Key to the global referenceDict dictionary if the
-#	reference is valid.
-# Throws:
-
-def verifyReference(
-    referenceID,          # reference accession ID; J:#### (string)
-    lineNum		  # line number (integer)
-    ):
-
-    global referenceDict
-
-    if referenceDict.has_key(referenceID):
-        referenceKey = referenceDict[referenceID]
-    else:
-        referenceKey = accessionlib.get_Object_key(referenceID, 'Reference')
-        if referenceKey is None:
-            errorFile.write('Invalid Reference (%d): %s\n' % (lineNum, referenceID))
-            referenceKey = 0
-        else:
-            referenceDict[referenceID] = referenceKey
-
-    return(referenceKey)
-
-# Purpose:  verify Field Type
-# Returns:  Field Type key if valid, else 0
-# Assumes:  nothing
-# Effects:  verifies that the Field Type exists in the fieldType dictionary
-#	writes to the error file if the Field Type is invalid
-# Throws:  nothing
-
-def verifyFieldType(
-    fieldType, 	# Field Type value (string)
-    lineNum	# line number (integer)
-    ):
-
-    global fieldTypeDict
-
-    fieldTypeKey = 0
-
-    if len(fieldTypeDict) == 0:
-	results = db.sql('select _FieldType_key, fieldType from IMG_FieldType', 'auto')
-	for r in results:
-	    fieldTypeDict[r['fieldType']] = r['_FieldType_key']
-
-    if fieldTypeDict.has_key(fieldType):
-        fieldTypeKey = fieldTypeDict[fieldType]
-    else:
-        errorFile.write('Invalid Field Type (%d): %s\n' % (lineNum, fieldType))
-
-    return fieldTypeKey
-
 # Purpose:  sets global primary key variables
 # Returns:  nothing
 # Assumes:  nothing
@@ -478,7 +420,7 @@ def processImageFile():
         except:
             exit(1, 'Invalid Line (%d): %s\n' % (lineNum, line))
 
-        referenceKey = verifyReference(jnum, lineNum)
+        referenceKey = loadlib.verifyReference(jnum, lineNum, errorFile)
 
         if referenceKey == 0:
             # set error flag to true
@@ -496,7 +438,7 @@ def processImageFile():
 	    ydim + TAB + \
 	    figureLabel + TAB + \
 	    copyrightNote + TAB + \
-	    cdate + TAB + cdate + CRT)
+	    loaddate + TAB + loaddate + CRT)
 
         # MGI Accession ID for the image
 
@@ -509,7 +451,7 @@ def processImageFile():
 	    imageMgiTypeKey + TAB + \
 	    accPrivate + TAB + \
 	    accPreferred + TAB + \
-	    cdate + TAB + cdate + TAB + cdate + CRT)
+	    loaddate + TAB + loaddate + TAB + loaddate + CRT)
 
         accKey = accKey + 1
         mgiKey = mgiKey + 1
@@ -523,7 +465,7 @@ def processImageFile():
 	    imageMgiTypeKey + TAB + \
 	    pixPrivate + TAB + \
 	    accPreferred + TAB + \
-	    cdate + TAB + cdate + TAB + cdate + CRT)
+	    loaddate + TAB + loaddate + TAB + loaddate + CRT)
 
         accKey = accKey + 1
 
@@ -534,13 +476,13 @@ def processImageFile():
             noteSeq = 1
 		
             while len(imageNote) > 255:
-                outNoteFile.write(str(imageKey) + TAB + str(noteSeq) + TAB + imageNote[:255] + TAB + cdate + TAB + cdate + CRT)
+                outNoteFile.write(str(imageKey) + TAB + str(noteSeq) + TAB + imageNote[:255] + TAB + loaddate + TAB + loaddate + CRT)
                 newnote = imageNote[255:]
                 imageNote = newnote
                 noteSeq = noteSeq + 1
 
             if len(imageNote) > 0:
-                outNoteFile.write(str(imageKey) + TAB + str(noteSeq) + TAB + imageNote[:255] + TAB + cdate + TAB + cdate + CRT)
+                outNoteFile.write(str(imageKey) + TAB + str(noteSeq) + TAB + imageNote[:255] + TAB + loaddate + TAB + loaddate + CRT)
 
 	imagePix[pixID] = imageKey
         imageKey = imageKey + 1
@@ -577,7 +519,7 @@ def processImagePaneFile():
         except:
             exit(1, 'Invalid Line (%d): %s\n' % (lineNum, line))
 
-        fieldTypeKey = verifyFieldType(fieldType, lineNum)
+        fieldTypeKey = gxdloadlib.verifyFieldType(fieldType, lineNum, errorFile)
 
         if fieldTypeKey == 0:
             # set error flag to true
@@ -593,7 +535,7 @@ def processImagePaneFile():
 	    str(imagePix[pixID]) + TAB + \
 	    str(fieldTypeKey) + TAB + \
 	    mgi_utils.prvalue(paneLabel) + TAB + \
-	    cdate + TAB + cdate + CRT)
+	    loaddate + TAB + loaddate + CRT)
 
         paneKey = paneKey + 1
 
@@ -619,4 +561,7 @@ exit(0)
 
 #
 # $Log$
+# Revision 1.1  2003/07/16 19:41:09  lec
+# TR 4800
+#
 #
