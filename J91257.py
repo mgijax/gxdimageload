@@ -35,7 +35,7 @@
 #               field 6: E-specificity
 #               field 7: E-CNS
 #               field 8-19: remaining expression
-#		field 20-21: Image labels
+#		field 20: Image label
 #
 # Outputs:
 #
@@ -188,7 +188,7 @@ def process(fp, idx1, idx2):
 
         try:
 	    imageFile = tokens[2]
-            imageFileLabels = tokens[idx1:idx2]
+            imageFileLabel = tokens[idx1]
         except:
             print 'Invalid Line (%d): %s\n' % (lineNum, line)
 
@@ -196,11 +196,6 @@ def process(fp, idx1, idx2):
 
 	if len(imageFile) == 0:
 	    continue
-
-	imageLabel = string.join(imageFileLabels, ';')
-	imageLabel = regsub.gsub('.jpg', '', imageLabel)
-	if imageLabel[-1] == ';':
-	    imageLabel = imageLabel[:-1]
 
 	if not pixelDict.has_key(imageFile):
 	    print 'Cannot Find Image (%d): %s\n' % (lineNum, imageFile)
@@ -227,11 +222,14 @@ def process(fp, idx1, idx2):
 #
 
 init()
-process(inInSituFile1, 19, 21)
-process(inInSituFile2, 20, 23)
+process(inInSituFile1, 19)
+process(inInSituFile2, 21)
 exit(0)
 
 # $Log$
+# Revision 1.6  2004/09/24 14:59:54  lec
+# TR 6118
+#
 # Revision 1.5  2004/09/16 17:33:46  lec
 # TR 6118
 #
