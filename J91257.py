@@ -77,6 +77,8 @@ pixeldatadir = os.environ['PIXELDBDATA']
 
 inInSituFile1Name = datadir + '/tr6118/E13.5_In_Situ_Coding_Table.txt'
 inInSituFile2Name = datadir + '/tr6118/P0_In_Situ_Coding_Table.txt'
+inInSituFile3Name = datadir + '/tr6118/WM_Coding_Table.txt'
+
 inPixFileName = datadir + '/pix91257.txt'
 outImageFileName = datadir + '/image.txt'
 outPaneFileName = datadir + '/imagepane.txt'
@@ -124,7 +126,7 @@ def exit(
 # Throws: nothing
 
 def init():
-    global inInSituFile1, inInSituFile2, inPixFile, outImageFile, outPaneFile, pixelDict
+    global inInSituFile1, inInSituFile2, inInSituFile3, inPixFile, outImageFile, outPaneFile, pixelDict
  
     try:
         inInSituFile1 = open(inInSituFile1Name, 'r')
@@ -135,6 +137,11 @@ def init():
         inInSituFile2 = open(inInSituFile2Name, 'r')
     except:
         exit(1, 'Could not open file %s\n' % inInSituFile2Name)
+
+    try:
+        inInSituFile3 = open(inInSituFile3Name, 'r')
+    except:
+        exit(1, 'Could not open file %s\n' % inInSituFile3Name)
 
     try:
         inPixFile = open(inPixFileName, 'r')
@@ -198,23 +205,30 @@ def process(fp, idx1):
 	if len(imageFile) == 0:
 	    continue
 
-	if not pixelDict.has_key(imageFile):
-	    print 'Cannot Find Image (%d): %s\n' % (lineNum, imageFile)
-	    continue
+	imageFiles = string.split(imageFile, ';')
+	imageFileLabels = string.split(imageFileLabel, ';')
 
-	# get x and y image dimensions
+	for r in range(len(imageFiles)):
+	    imageFile = imageFiles[r]
+	    imageFileLabel = imageFileLabels[r]
 
-	(xdim, ydim) = jpeginfo.getDimensions(pixeldatadir + '/' + pixelDict[imageFile] + '.jpg')
+	    if not pixelDict.has_key(imageFile):
+	        print 'Cannot Find Image (%d): %s\n' % (lineNum, imageFile)
+	        continue
 
-	outImageFile.write(reference + TAB + \
-	      pixelDict[imageFile] + TAB + \
-	      str(xdim) + TAB + \
-	      str(ydim) + TAB + \
-	      imageFileLabel + TAB + \
-	      copyrightNote + TAB + \
-	      imageNote + CRT)
+	    # get x and y image dimensions
 
-	outPaneFile.write(pixelDict[imageFile] + TAB + paneLabel + CRT)
+	    (xdim, ydim) = jpeginfo.getDimensions(pixeldatadir + '/' + pixelDict[imageFile] + '.jpg')
+
+	    outImageFile.write(reference + TAB + \
+	          pixelDict[imageFile] + TAB + \
+	          str(xdim) + TAB + \
+	          str(ydim) + TAB + \
+	          imageFileLabel + TAB + \
+	          copyrightNote + TAB + \
+	          imageNote + CRT)
+
+	    outPaneFile.write(pixelDict[imageFile] + TAB + paneLabel + CRT)
 
     # end of "for line in fp.readlines():"
 
@@ -225,9 +239,13 @@ def process(fp, idx1):
 init()
 process(inInSituFile1, 19)
 process(inInSituFile2, 21)
+process(inInSituFile3, 16)
 exit(0)
 
 # $Log$
+# Revision 1.8  2004/11/19 19:01:14  lec
+# TR 6118
+#
 # Revision 1.7  2004/10/14 17:29:32  lec
 # TR 6118
 #
