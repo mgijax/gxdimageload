@@ -378,7 +378,7 @@ def process():
 	    mouseGene = tokens[3]
 	    accID = tokens[4]
 	    results = tokens[5:24]
-	    imageFileNames = tokens[25:27]
+	    imageFileNames = tokens[24:]
 
         except:
             print 'Invalid Line (%d): %s\n' % (lineNum, line)
@@ -448,6 +448,9 @@ exit(0)
 
 #
 # $Log$
+# Revision 1.3  2003/09/24 14:32:43  lec
+# TR 5154
+#
 # Revision 1.2  2003/09/22 11:24:37  lec
 # TR 5154
 #
