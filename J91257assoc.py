@@ -89,10 +89,12 @@ errorFile = ''		# error file descriptor
 
 inInSituFile1 = ''	# file descriptor
 inInSituFile2 = ''	# file descriptor
+inInSituFile3 = ''	# file descriptor
 inPixFile = ''		# file descriptor
 
 inInSituFile1Name = datadir + '/tr6118/E13.5_In_Situ_Coding_Table.txt'
 inInSituFile2Name = datadir + '/tr6118/P0_In_Situ_Coding_Table.txt'
+inInSituFile3Name = datadir + '/tr6118/WM_Coding_Table.txt'
 inPixFileName = datadir + '/pix91257.txt'
 
 # output files
@@ -154,6 +156,7 @@ def exit(
         errorFile.close()
 	inInSituFile1.close()
 	inInSituFile2.close()
+	inInSituFile3.close()
 	inPixFile.close()
 	outAssocFile.close()
     except:
@@ -172,7 +175,7 @@ def exit(
 
 def init():
     global diagFile, errorFile, errorFileName, diagFileName, passwordFileName
-    global inInSituFile1, inInSituFile2, inPixFile, pixelDict
+    global inInSituFile1, inInSituFile2, inInSituFile3, inPixFile, pixelDict
     global mode, mgiProbe, refKey
     global outAssocFile
  
@@ -239,6 +242,11 @@ def init():
         inInSituFile2 = open(inInSituFile2Name, 'r')
     except:
         exit(1, 'Could not open file %s\n' % inInSituFile2Name)
+
+    try:
+        inInSituFile3 = open(inInSituFile3Name, 'r')
+    except:
+        exit(1, 'Could not open file %s\n' % inInSituFile3Name)
 
     try:
         inPixFile = open(inPixFileName, 'r')
@@ -322,7 +330,7 @@ def bcpFiles():
 # Effects:  verifies and processes each line in the input file
 # Throws:   nothing
 
-def process(fp, sLabel):
+def process(fp, age):
 
     # For each line in the input file
 
@@ -351,42 +359,52 @@ def process(fp, sLabel):
 
 	lineNum = lineNum + 1
 
-	if not pixelDict.has_key(imageFile):
-	    print 'Cannot Find Image (%d): %s\n' % (lineNum, imageFile)
+	tokens = string.split(imageFile, '.jpg')
+	imageFile = tokens[0]
+
+	if len(imageFile) == 0:
 	    continue
 
-        probeName = 'MTF#' + mtf
-	probeKey = mgiProbe[probeName]
-        imagePaneKey = assoclib.verifyImage(pixelDict[imageFile], lineNum, errorFile)
+	imageFiles = string.split(imageFile, ';')
 
-        if imagePaneKey == 0:
-            # set error flag to true
-            error = 1
+	for imageFile in imageFiles:
 
-        # if errors, continue to next record
-        if error:
-            continue
+	    if not pixelDict.has_key(imageFile):
+	        print 'Cannot Find Image (%d): %s\n' % (lineNum, imageFile)
+	        continue
 
-        # if no errors, process
+            probeName = 'MTF#' + mtf
+	    probeKey = mgiProbe[probeName]
+            imagePaneKey = assoclib.verifyImage(pixelDict[imageFile], lineNum, errorFile)
 
-	# for each Assay of the Probe
-	#    for each Specimen of each Assay
-	#        for each Result of each Specimen
-	#            associate the Image Pane with the Result
+            if imagePaneKey == 0:
+                # set error flag to true
+                error = 1
 
-	results = db.sql('select i._Result_key ' + \
+            # if errors, continue to next record
+            if error:
+                continue
+
+            # if no errors, process
+
+	    # for each Assay of the Probe
+	    #    for each Specimen of each Assay
+	    #        for each Result of each Specimen
+	    #            associate the Image Pane with the Result
+
+	    results = db.sql('select i._Result_key ' + \
 		        'from GXD_Assay a, GXD_ProbePrep p, GXD_Specimen s, GXD_InSituResult i ' + \
 		        'where a._Refs_key = %s ' % (refKey) + \
 		        'and a._ProbePrep_key = p._ProbePrep_key ' + \
 		        'and p._Probe_key = %s ' % (probeKey) + \
 		        'and a._Assay_key = s._Assay_key ' + \
-			'and s.specimenLabel = "%s" ' % (sLabel) + \
+			'and s.age = "%s" ' % (age) + \
 		        'and s._Specimen_key = i._Specimen_key', 'auto')
 
-	for r in results:
-	    outAssocFile.write(str(r['_Result_key']) + TAB + \
-	            str(imagePaneKey) + TAB + \
-	            loaddate + TAB + loaddate + CRT)
+	    for r in results:
+	        outAssocFile.write(str(r['_Result_key']) + TAB + \
+	                str(imagePaneKey) + TAB + \
+	                loaddate + TAB + loaddate + CRT)
 
     #	end of "for line in fp.readlines():"
 
@@ -398,13 +416,17 @@ def process(fp, sLabel):
 
 init()
 verifyMode()
-process(inInSituFile1, 1)
-process(inInSituFile2, 2)
+process(inInSituFile1, 'embryonic day 13.5')
+process(inInSituFile2, 'postnatal newborn')
+process(inInSituFile3, 'embryonic day 10.5')
 bcpFiles()
 exit(0)
 
 #
 # $Log$
+# Revision 1.6  2004/09/16 16:39:06  lec
+# TR 6118
+#
 # Revision 1.5  2004/09/16 16:27:55  lec
 # TR 6118
 #
