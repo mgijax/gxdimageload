@@ -68,8 +68,8 @@ import string
 import getopt
 import db
 import mgi_utils
-import accessionlib
 import loadlib
+import assoclib
 
 #globals
 
@@ -112,11 +112,8 @@ mode = ''		# processing mode (load, preview)
 reference = 'J:91257'
 createdBy = os.environ['CREATEDBY']
 refKey = ''
-pixPrefix = 'PIX:'
-pixMgiType = 'Image'
 
 pixelDict = {}   # dictionary of pix file name/pix id
-imageDict = {}	 # dictionary of pix id/image pane key
 mgiProbe = {}	 # dictionary of Probe Name/Probe key
 
 loaddate = loadlib.loaddate
@@ -273,14 +270,7 @@ def init():
         mgiProbe[r['name']] = r['_Probe_key']
 
     refKey = loadlib.verifyReference(reference, 0, errorFile)
-
-    for line in inPixFile.readlines():
-	tokens = string.split(line[:-1], TAB)
-	pixFileName = tokens[0]
-	pixID = tokens[1]
-	key = pixFileName
-	value = pixID
-	pixelDict[key] = value
+    pixelDict = assoclib.readPixelFile(inPixFile)
 
     return
 
@@ -300,41 +290,6 @@ def verifyMode():
         bcpon = 0
     elif mode != 'load':
         exit(1, 'Invalid Processing Mode:  %s\n' % (mode))
-
-# Purpose:  verifies the pix ID
-# Returns:  the primary key of the image pane or 0 if invalid
-# Assumes:  nothing
-# Effects:  verifies that the Image Pane exists by checking the imageDict
-#	dictionary for the pix ID or the database.
-#	writes to the error file if the Image Pane is invalid.
-#	adds the Pix ID/Key to the global imageDict dictionary if the
-#	Image is valid.
-# Throws:
-
-def verifyImage(
-    pixID,          # pix accession ID; PIX:#### (string)
-    lineNum	  # line number (integer)
-    ):
-
-    global imageDict
-
-    pixID = pixPrefix + pixID
-
-    if imageDict.has_key(pixID):
-        imagePaneKey = imageDict[pixID]
-    else:
-        imageKey = accessionlib.get_Object_key(pixID, pixMgiType)
-        if imageKey is None:
-            errorFile.write('Invalid Reference (%d): %s\n' % (lineNum, pixID))
-            imageKey = 0
-	    imagePaneKey = 0
-        else:
-	    results = db.sql('select _ImagePane_key from IMG_ImagePane ' + \
-		'where _Image_key = %s' % (imageKey), 'auto')
-	    imagePaneKey = results[0]['_ImagePane_key']
-            imageDict[pixID] = imagePaneKey
-
-    return imagePaneKey
 
 # Purpose:  BCPs the data into the database
 # Returns:  nothing
@@ -402,7 +357,7 @@ def process(fp, sLabel):
 
         probeName = 'MTF#' + mtf
 	probeKey = mgiProbe[probeName]
-        imagePaneKey = verifyImage(pixelDict[imageFile], lineNum)
+        imagePaneKey = assoclib.verifyImage(pixelDict[imageFile], lineNum, errorFile)
 
         if imagePaneKey == 0:
             # set error flag to true
@@ -450,6 +405,9 @@ exit(0)
 
 #
 # $Log$
+# Revision 1.5  2004/09/16 16:27:55  lec
+# TR 6118
+#
 # Revision 1.4  2004/09/16 16:17:51  lec
 # TR 6118
 #

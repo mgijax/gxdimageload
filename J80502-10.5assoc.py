@@ -66,7 +66,7 @@ import string
 import getopt
 import db
 import mgi_utils
-import accessionlib
+import assoclib
 
 #globals
 
@@ -106,11 +106,6 @@ mode = ''		# processing mode (load, preview)
 
 reference = 'J:80502'
 createdBy = os.environ['CREATEDBY']
-pixPrefix = 'PIX:'
-pixMgiType = 'Image'
-
-# dictionaries to cache data for quicker lookup
-imageDict = {}
 
 cdate = mgi_utils.date('%m/%d/%Y')	# current date
 
@@ -271,41 +266,6 @@ def verifyMode():
     elif mode != 'load':
         exit(1, 'Invalid Processing Mode:  %s\n' % (mode))
 
-# Purpose:  verifies the pix ID
-# Returns:  the primary key of the image pane or 0 if invalid
-# Assumes:  nothing
-# Effects:  verifies that the Image Pane exists by checking the imageDict
-#	dictionary for the pix ID or the database.
-#	writes to the error file if the Image Pane is invalid.
-#	adds the Pix ID/Key to the global imageDict dictionary if the
-#	Image is valid.
-# Throws:
-
-def verifyImage(
-    pixID,          # pix accession ID; PIX:#### (string)
-    lineNum	  # line number (integer)
-    ):
-
-    global imageDict
-
-    pixID = pixPrefix + pixID
-
-    if imageDict.has_key(pixID):
-        imagePaneKey = imageDict[pixID]
-    else:
-        imageKey = accessionlib.get_Object_key(pixID, pixMgiType)
-        if imageKey is None:
-            errorFile.write('Invalid Reference (%d): %s\n' % (lineNum, pixID))
-            imageKey = 0
-	    imagePaneKey = 0
-        else:
-	    results = db.sql('select _ImagePane_key from IMG_ImagePane ' + \
-		'where _Image_key = %s' % (imageKey), 'auto')
-	    imagePaneKey = results[0]['_ImagePane_key']
-            imageDict[pixID] = imagePaneKey
-
-    return imagePaneKey
-
 # Purpose:  BCPs the data into the database
 # Returns:  nothing
 # Assumes:  nothing
@@ -392,7 +352,7 @@ def process():
 	    print 'Cannot Find Image (%d): %s\n' % (lineNum, imageFileName)
 	    continue
 
-        imagePaneKey = verifyImage(pixelDict[imageFileName], lineNum)
+        imagePaneKey = assoclib.verifyImage(pixelDict[imageFileName], lineNum)
 
         if imagePaneKey == 0:
             # set error flag to true
@@ -442,6 +402,9 @@ exit(0)
 
 #
 # $Log$
+# Revision 1.5  2003/07/18 16:17:28  lec
+# TR 4800
+#
 # Revision 1.4  2003/07/17 18:30:14  lec
 # TR 4800
 #

@@ -16,20 +16,8 @@ setenv GXDIMGLOADSYSTEMDOCDIR	$GXDIMGLOADINSTALLDIR/system_docs
 # data directory
 setenv GXDIMGLOADDATADIR	$GXDIMGLOADINSTALLDIR/data
 
-# SYBASE
-setenv SYBASE	/opt/sybase/12.5
-
-# LD LIBRARY PATH
-setenv LD_LIBRARY_PATH    $SYBASE/OCS-12_5/lib
-
-# PYTHON
-setenv PYTHONPATH         /usr/local/mgi/lib/python
-
-# DB UTILITIES
-setenv DBUTILITIESPATH	/usr/local/mgi/dbutils/mgidbutilities
-
-# PATH
-set path = ($DBUTILITIESPATH/bin $path $SYBASE/ASE-12_5/bin $SYBASE/OCS-12_5/bin)
+# schema directory
+setenv SCHEMADIR                /home/lec/db/patch301/mgddbschema
 
 # Pixel DB Data Directory
 setenv PIXELDBDATA      /usr/local/mgi/pixeldb_data
@@ -37,23 +25,11 @@ setenv PIXELDBDATA      /usr/local/mgi/pixeldb_data
 # Pixel DB Accession Counter
 setenv PIXELDBCOUNTER   $PIXELDBDATA/accession/counter
 
-# Database Server; for backwards compatibility, also define DSQUERY
-setenv DBSERVER	PROD_MGI
-setenv DSQUERY $DBSERVER
-
-# Database; for backwards compatibility, also define MGD
-setenv DBNAME	mgd
-setenv MGD $DBNAME
-
-# Super User
-setenv DBUSER	mgd_dbo
-
-# Password
-setenv DBPASSWORDFILE	$DBUTILITIESPATH/.mgd_dbo_password
-
 # Load Mode
 setenv LOADMODE		load
 
 # Created By
 setenv CREATEDBY	jfinger
+
+source ${SCHEMADIR}/Configuration
 
