@@ -60,9 +60,19 @@ touch $OUTPUTFILE
 echo "starting pix id: " $accID
 
 foreach j ($JPEGDIRECTORY/*.jpg)
-	echo `basename $j`
+	set n=`basename $j .jpg`
+	echo `basename $j .jpg`
 	cp $j $PIXELDBDATA/$accID.jpg
-	echo "`basename $j .jpg`	$accID" >> $OUTPUTFILE
+	echo "$n 	$accID" >> $OUTPUTFILE
+	set accID=`expr $accID + 1`
+end
+
+foreach j ($JPEGDIRECTORY/*.jpeg)
+	set n=`basename $j .jpg`
+	echo `basename $j .jpeg`
+	cp $j $PIXELDBDATA/$accID.jpg
+	echo "$n 	$accID" >> $OUTPUTFILE
+	echo "`basename $j .jpeg`	$accID" >> $OUTPUTFILE
 	set accID=`expr $accID + 1`
 end
 
