@@ -168,7 +168,7 @@ def init():
 # Effects:  writes data to output files
 # Throws:   nothing
 
-def process(fp, idx1, idx2):
+def process(fp, idx1):
 
     # For each line in the input file
 
@@ -176,23 +176,24 @@ def process(fp, idx1, idx2):
 
     for line in fp.readlines():
 
+	lineNum = lineNum + 1
+
         # Split the line into tokens
         tokens = string.split(line[:-1], TAB)
 
 	# skip first line (header)
-	if lineNum == 0:
-	    lineNum = lineNum + 1
+	if lineNum == 1:
 	    continue
 
 	# else process an actual data line
 
-        try:
-	    imageFile = tokens[2]
-            imageFileLabel = tokens[idx1]
-        except:
-            print 'Invalid Line (%d): %s\n' % (lineNum, line)
+	imageFile = tokens[2]
+	if len(imageFile) == 0:
+	    continue
 
-	lineNum = lineNum + 1
+        imageFileLabel = tokens[idx1]
+	tokens = string.split(imageFile, '.jpg')
+	imageFile = tokens[0]
 
 	if len(imageFile) == 0:
 	    continue
@@ -209,7 +210,7 @@ def process(fp, idx1, idx2):
 	      pixelDict[imageFile] + TAB + \
 	      str(xdim) + TAB + \
 	      str(ydim) + TAB + \
-	      imageLabel + TAB + \
+	      imageFileLabel + TAB + \
 	      copyrightNote + TAB + \
 	      imageNote + CRT)
 
@@ -227,6 +228,9 @@ process(inInSituFile2, 21)
 exit(0)
 
 # $Log$
+# Revision 1.7  2004/10/14 17:29:32  lec
+# TR 6118
+#
 # Revision 1.6  2004/09/24 14:59:54  lec
 # TR 6118
 #
