@@ -20,7 +20,7 @@ touch $LOG
 date > $LOG
  
 # process the image files; load them into pixeldb and assign pix ids
-#pixload.csh ${GXDIMGLOADDATADIR}/tr6118/images ${GXDIMGLOADDATADIR}/pix91257.txt >>& $LOG
+pixload.csh ${GXDIMGLOADDATADIR}/tr6118/images ${GXDIMGLOADDATADIR}/pix91257.txt >>& $LOG
 
 # generate the MGI-format image files
 J91257.py >>& $LOG
