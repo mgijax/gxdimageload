@@ -366,7 +366,6 @@ def bcpFiles(
 
     bcpI = 'cat %s | bcp %s..' % (passwordFileName, db.get_sqlDatabase())
     bcpII = '-c -t\"%s' % (bcpdelim) + '" -S%s -U%s' % (db.get_sqlServer(), db.get_sqlUser())
-    truncateDB = 'dump transaction %s with truncate_only' % (db.get_sqlDatabase())
 
     bcp1 = '%s%s in %s %s' % (bcpI, imageTable, outImageFileName, bcpII)
     bcp2 = '%s%s in %s %s' % (bcpI, noteTable, outNoteFileName, bcpII)
@@ -376,7 +375,6 @@ def bcpFiles(
     for bcpCmd in [bcp1, bcp2, bcp3, bcp4]:
 	diagFile.write('%s\n' % bcpCmd)
 	os.system(bcpCmd)
-	db.sql(truncateDB, None)
 
     # update the max Accession ID value
     db.sql('exec ACC_setMax %d' % (recordsProcessed), None)
@@ -385,7 +383,6 @@ def bcpFiles(
     db.sql('update statistics %s' % (imageTable), None)
     db.sql('update statistics %s' % (noteTable), None)
     db.sql('update statistics %s' % (paneTable), None)
-    db.sql('update statistics %s' % (accTable), None)
 
     return
 
@@ -553,6 +550,9 @@ exit(0)
 
 #
 # $Log$
+# Revision 1.3  2004/09/08 19:41:40  lec
+# TR 6118
+#
 # Revision 1.2  2003/09/24 12:30:44  lec
 # TR 5154
 #
