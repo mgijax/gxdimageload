@@ -20,12 +20,12 @@ touch $LOG
 date > $LOG
  
 # process the image files; load them into pixeldb and assign pix ids
-#pixload.csh ${GXDIMGLOADDATADIR}/tr5154/images/unzipped ${GXDIMGLOADDATADIR}/pix80501.txt >>& $LOG
+pixload.csh ${GXDIMGLOADDATADIR}/tr5154/images/unzipped ${GXDIMGLOADDATADIR}/pix80501.txt >>& $LOG
 
 # generate the MGI-format image files
-#J80501.py -S${DBSERVER} -D${DBNAME} -U${DBUSER} -P${DBPASSWORDFILE} >>& $LOG
+J80501.py -S${DBSERVER} -D${DBNAME} -U${DBUSER} -P${DBPASSWORDFILE} >>& $LOG
 # process the MGI-format image files
-#gxdimageload.py -S${DBSERVER} -D${DBNAME} -U${DBUSER} -P${DBPASSWORDFILE} -M${LOADMODE} >>& $LOG
+gxdimageload.py -S${DBSERVER} -D${DBNAME} -U${DBUSER} -P${DBPASSWORDFILE} -M${LOADMODE} >>& $LOG
 # process the associations between assays and images
 J80501assoc.py -S${DBSERVER} -D${DBNAME} -U${DBUSER} -P${DBPASSWORDFILE} -M${LOADMODE} >>& $LOG
 
