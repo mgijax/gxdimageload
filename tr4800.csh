@@ -19,15 +19,22 @@ touch $LOG
  
 date > $LOG
  
-#pixload.csh ${GXDIMGLOADDATADIR}/tr4800/images/10.5dpc ${GXDIMGLOADDATADIR}/pix10.5.txt >>& $LOG
-#pixload.csh ${GXDIMGLOADDATADIR}/tr4800/images/14.5dpc ${GXDIMGLOADDATADIR}/pix14.5.txt >>& $LOG
+# process the image files; load them into pixeldb and assign pix ids
+pixload.csh ${GXDIMGLOADDATADIR}/tr4800/images/10.5dpc ${GXDIMGLOADDATADIR}/pix10.5.txt >>& $LOG
+pixload.csh ${GXDIMGLOADDATADIR}/tr4800/images/14.5dpc ${GXDIMGLOADDATADIR}/pix14.5.txt >>& $LOG
 
+# generate the MGI-format image files
 J80502-10.5.py -S${DBSERVER} -D${DBNAME} -U${DBUSER} -P${DBPASSWORDFILE} >>& $LOG
+# process the MGI-format image files
 gxdimageload.py -S${DBSERVER} -D${DBNAME} -U${DBUSER} -P${DBPASSWORDFILE} -M${LOADMODE} >>& $LOG
+# process the associations between assays and images
 J80502-10.5assoc.py -S${DBSERVER} -D${DBNAME} -U${DBUSER} -P${DBPASSWORDFILE} -M${LOADMODE} >>& $LOG
 
+# generate the MGI-format image files
 J80502-14.5.py -S${DBSERVER} -D${DBNAME} -U${DBUSER} -P${DBPASSWORDFILE} >>& $LOG
+# process the MGI-format image files
 gxdimageload.py -S${DBSERVER} -D${DBNAME} -U${DBUSER} -P${DBPASSWORDFILE} -M${LOADMODE} >>& $LOG
+# process the associations between assays and images
 J80502-14.5assoc.py -S${DBSERVER} -D${DBNAME} -U${DBUSER} -P${DBPASSWORDFILE} -M${LOADMODE} >>& $LOG
 
 
