@@ -8,7 +8,7 @@
 #
 
 # install directory
-setenv GXDIMGLOADINSTALLDIR	/usr/local/mgi/dataload/gxdimageload
+setenv GXDIMGLOADINSTALLDIR	/usr/local/mgi/live/dataload/gxdimageload
 
 # system doc directory
 setenv GXDIMGLOADSYSTEMDOCDIR	$GXDIMGLOADINSTALLDIR/system_docs
@@ -17,7 +17,7 @@ setenv GXDIMGLOADSYSTEMDOCDIR	$GXDIMGLOADINSTALLDIR/system_docs
 setenv GXDIMGLOADDATADIR	$GXDIMGLOADINSTALLDIR/data
 
 # schema directory
-setenv SCHEMADIR                /home/lec/db/patch301/mgddbschema
+setenv SCHEMADIR                /usr/local/mgi/live/dbutils/mgd/mgddbschema
 
 # Pixel DB Data Directory
 setenv PIXELDBDATA      /usr/local/mgi/pixeldb_data
