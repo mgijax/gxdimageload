@@ -34,8 +34,8 @@
 #		field 4: MGI gene symbol
 #		field 5: MGI gene ID
 #		field 6: overall expression
-#		field 7-24: expression
-#		field 25-27: image file names
+#		field 7-25: expression
+#		field 26-28: image file names
 #
 # Outputs:
 #
@@ -252,8 +252,8 @@ def process():
 	    mgiCloneID = tokens[2]
 	    mouseGene = tokens[3]
 	    accID = tokens[4]
-	    results = tokens[5:23]
-	    imageFileNames = tokens[24:26]
+	    results = tokens[5:24]
+	    imageFileNames = tokens[25:27]
 
         except:
             print 'Invalid Line (%d): %s\n' % (lineNum, line)
@@ -304,4 +304,7 @@ process()
 exit(0)
 
 # $Log$
+# Revision 1.1  2003/09/19 19:28:58  lec
+# TR 5154
+#
 #

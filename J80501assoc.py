@@ -28,17 +28,19 @@
 #
 # Inputs:
 #
-#       pix10.5.txt, a tab-delimited file in the format:
+#       pix80501.txt, a tab-delimited file in the format:
 #               field 1: Image File Name
 #               field 2: PIX ID (####)
 #
-#       E10.5_In_situ.txt, a tab-delimited file in the format:
-#               field 1: Vial #
-#               field 2: Mouse Gene Symbol
-#               field 3: MGI Marker Accession ID
-#               field 4: Human Gene
-#               field 5-16: Tissues
-#               field 17: Image file name
+#	9.5_dpc_in_situ_results.txt, a tab-delimited file in the format:
+#               field 1: Paper ID
+#		field 2: Clone ID
+#		field 3: MGI clone ID
+#		field 4: MGI gene symbol
+#		field 5: MGI gene ID
+#		field 6: overall expression
+#		field 7-25: expression
+#		field 26-28: image file names
 #
 # Outputs:
 #
@@ -375,8 +377,8 @@ def process():
 	    mgiCloneID = tokens[2]
 	    mouseGene = tokens[3]
 	    accID = tokens[4]
-	    results = tokens[5:23]
-	    imageFileNames = tokens[24:26]
+	    results = tokens[5:24]
+	    imageFileNames = tokens[25:27]
 
         except:
             print 'Invalid Line (%d): %s\n' % (lineNum, line)
@@ -446,6 +448,9 @@ exit(0)
 
 #
 # $Log$
+# Revision 1.2  2003/09/22 11:24:37  lec
+# TR 5154
+#
 # Revision 1.1  2003/09/19 19:52:07  lec
 # TR 5154
 #
