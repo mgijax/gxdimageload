@@ -17,7 +17,7 @@
 #
 # Usage:
 #
-#	pixload.csh [JPEG File Directory] [output file]
+#	pixload.csh [JPG File Directory] [output file]
 #
 #	example: pixload.csh data/tr4800/images/10.5dpc pix10.5dpc
 #
@@ -51,7 +51,7 @@
 
 cd `dirname $0` && source ./Configuration
 
-setenv JPEGDIRECTORY	$1
+setenv JPGDIRECTORY	$1
 setenv OUTPUTFILE	$2
 
 set accID=`cat $PIXELDBCOUNTER`
@@ -59,19 +59,11 @@ rm -rf $OUTPUTFILE
 touch $OUTPUTFILE
 echo "starting pix id: " $accID
 
-foreach j ($JPEGDIRECTORY/*.jpg)
+foreach j ($JPGDIRECTORY/*.jpg)
 	set n=`basename $j .jpg`
 	echo $n
 	cp $j $PIXELDBDATA/$accID.jpg
-	echo "$n	$accID" >> $OUTPUTFILE
-	set accID=`expr $accID + 1`
-end
-
-foreach j ($JPEGDIRECTORY/*.jpeg)
-	set n=`basename $j .jpeg`
-	echo $n
-	cp $j $PIXELDBDATA/$accID.jpg
-	echo "$n	$accID" >> $OUTPUTFILE
+	echo "$j	$accID" >> $OUTPUTFILE
 	set accID=`expr $accID + 1`
 end
 
