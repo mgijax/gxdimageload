@@ -388,14 +388,16 @@ def process():
 
 	for imageFileName in imageFileNames:
 
-	    if len(imageFileName) == 0:
+	    i = string.strip(imageFileName)
+
+	    if len(i) == 0:
 	        continue
 
-	    if not pixelDict.has_key(imageFileName):
-	        print 'Cannot Find Image (%d): %s\n' % (lineNum, imageFileName)
+	    if not pixelDict.has_key(i):
+	        print 'Cannot Find Image (%d): %s\n' % (lineNum, i)
 	        continue
 
-            imagePaneKey = verifyImage(pixelDict[imageFileName], lineNum)
+            imagePaneKey = verifyImage(pixelDict[i], lineNum)
 
             if imagePaneKey == 0:
                 # set error flag to true
@@ -407,7 +409,7 @@ def process():
 
             # if no errors, process
 
-	    # for each 10.5 Assay of the Gene
+	    # for each Assay of the Gene
 	    #    for each Specimen of each Assay
 	    #        for each Result of each Specimen
 	    #            associate the Image Pane with the Result
@@ -444,4 +446,7 @@ exit(0)
 
 #
 # $Log$
+# Revision 1.1  2003/09/19 19:52:07  lec
+# TR 5154
+#
 #
