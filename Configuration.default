@@ -13,17 +13,23 @@ setenv GXDIMGLOADINSTALLDIR	/usr/local/mgi/live/dataload/gxdimageload
 # system doc directory
 setenv GXDIMGLOADSYSTEMDOCDIR	$GXDIMGLOADINSTALLDIR/system_docs
 
-# data directory
-setenv GXDIMGLOADDATADIR	$GXDIMGLOADINSTALLDIR/data
+# data, log and report directories
+setenv FILEDIR		/data/loads/mgi/gxdimageload
+setenv DATADIR		${FILEDIR}/data
+setenv LOGDIR		${FILEDIR}/logs
+setenv RPTDIR		${FILEDIR}/reports
+
+# insituload data directory
+setenv INSITUDATADIR	/data/loads/mgi/assayload/data/insitu
 
 # schema directory
-setenv SCHEMADIR                /usr/local/mgi/live/dbutils/mgd/mgddbschema
+setenv SCHEMADIR	/usr/local/mgi/live/dbutils/mgd/mgddbschema
 
 # Pixel DB Data Directory
-setenv PIXELDBDATA      /usr/local/mgi/pixeldb_data
+setenv PIXELDBDATA	/usr/local/mgi/pixeldb_data
 
 # Pixel DB Accession Counter
-setenv PIXELDBCOUNTER   $PIXELDBDATA/accession/counter
+setenv PIXELDBCOUNTER	$PIXELDBDATA/accession/counter
 
 # Load Mode
 setenv LOADMODE		load
