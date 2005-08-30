@@ -170,8 +170,8 @@ def process():
     #
     results = db.sql('select i.figureLabel, ip.paneLabel, ' + \
                             'ip._ImagePane_key ' + \
-                     'from mgd_dbm..IMG_Image i, ' + \
-                          'mgd_dbm..IMG_ImagePane ip ' + \
+                     'from IMG_Image i, ' + \
+                          'IMG_ImagePane ip ' + \
                      'where i._Refs_key = ' + str(refKey) + ' and ' + \
                            'i._Image_key = ip._Image_key','auto')
 
@@ -224,6 +224,9 @@ finalize()
 
 
 #  $Log$
+#  Revision 1.2  2005/08/29 13:46:17  dbm
+#  gxdimageload-3-2-0-1
+#
 #  Revision 1.1.2.1  2005/08/18 14:33:14  dbm
 #  New for TR 6739
 #
