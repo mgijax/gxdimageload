@@ -13,9 +13,13 @@
 #	To load new Images into IMG Structures
 #
 #	IMG_Image
-#	IMG_ImageNote
 #	IMG_ImagePane
 #	ACC_Accession
+#
+#	And create input files for Note load (noteload):
+#
+#	IMG_Copyright.in
+#	IMG_Note.in
 #
 # Requirements Satisfied by This Program:
 #
@@ -557,6 +561,9 @@ exit(0)
 
 #
 # $Log$
+# Revision 1.5  2005/10/18 19:42:04  lec
+# new IMG schema
+#
 # Revision 1.4  2004/09/16 16:12:15  lec
 # TR 6118
 #
