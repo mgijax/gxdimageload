@@ -50,9 +50,11 @@
 #       BCP files:
 #
 #       IMG_Image.bcp			master Image records
-#	IMG_ImageNote.bcp		Image note records
 #	IMG_ImagePane.bcp		Image Pane records
 #       ACC_Accession.bcp               Accession records
+#
+#	IMG_Copyright.in		input file for noteload
+#	IMG_Note.in			input file for noteload
 #
 #       Diagnostics file of all input parameters and SQL commands
 #       Error file
@@ -102,19 +104,20 @@ inPaneFileName = datadir + '/imagepane.txt'
 # output files
 
 outImageFile = ''	# file descriptor
+outCopyrightFile = ''	# file descriptor
 outNoteFile = ''	# file descriptor
 outPaneFile = ''	# file descriptor
 outAccFile = ''         # file descriptor
 
 imageTable = 'IMG_Image'
-noteTable = 'IMG_ImageNote'
 paneTable = 'IMG_ImagePane'
 accTable = 'ACC_Accession'
 
 outImageFileName = datadir + '/' + imageTable + '.bcp'
-outNoteFileName = datadir + '/' + noteTable + '.bcp'
 outPaneFileName = datadir + '/' + paneTable + '.bcp'
 outAccFileName = datadir + '/' + accTable + '.bcp'
+outCopyrightFileName = datadir + '/IMG_Copyright.in'
+outNoteFileName = datadir + '/IMG_Note.in'
 
 diagFileName = ''	# diagnostic file name
 errorFileName = ''	# error file name
@@ -142,6 +145,8 @@ accPreferred = '1'	# Preferred status MGI accession ID (true)
 pixPrefix = 'PIX:'	# Prefix for PIX
 pixLogicalDBKey = '19'	# Logical DB Key for PIX ID
 pixPrivate = '1'	# Private status for PIX ID (true)
+
+imageTypeKey = 1072158	# Full Size Image Type key
 
 # dictionaries to cache data for quicker lookup
 
@@ -200,7 +205,7 @@ def exit(
 def init():
     global diagFile, errorFile, inputFile, errorFileName, diagFileName, passwordFileName
     global mode, createdByKey
-    global outImageFile, outNoteFile, outPaneFile, outAccFile
+    global outImageFile, outCopyrightFile, outNoteFile, outPaneFile, outAccFile
     global inImageFile, inPaneFile
  
     try:
@@ -275,11 +280,6 @@ def init():
         exit(1, 'Could not open file %s\n' % outImageFileName)
 
     try:
-        outNoteFile = open(outNoteFileName, 'w')
-    except:
-        exit(1, 'Could not open file %s\n' % outNoteFileName)
-
-    try:
         outPaneFile = open(outPaneFileName, 'w')
     except:
         exit(1, 'Could not open file %s\n' % outPaneFileName)
@@ -288,6 +288,16 @@ def init():
         outAccFile = open(outAccFileName, 'w')
     except:
         exit(1, 'Could not open file %s\n' % outAccFileName)
+
+    try:
+        outNoteFile = open(outNoteFileName, 'w')
+    except:
+        exit(1, 'Could not open file %s\n' % outNoteFileName)
+
+    try:
+        outCopyrightFile = open(outCopyrightFileName, 'w')
+    except:
+        exit(1, 'Could not open file %s\n' % outCopyrightFileName)
 
     # Log all SQL
     db.set_sqlLogFunction(db.sqlLogAll)
@@ -360,7 +370,6 @@ def bcpFiles(
         return
 
     outImageFile.close()
-    outNoteFile.close()
     outPaneFile.close()
     outAccFile.close()
 
@@ -368,11 +377,10 @@ def bcpFiles(
     bcpII = '-c -t\"%s' % (bcpdelim) + '" -S%s -U%s' % (db.get_sqlServer(), db.get_sqlUser())
 
     bcp1 = '%s%s in %s %s' % (bcpI, imageTable, outImageFileName, bcpII)
-    bcp2 = '%s%s in %s %s' % (bcpI, noteTable, outNoteFileName, bcpII)
-    bcp3 = '%s%s in %s %s' % (bcpI, paneTable, outPaneFileName, bcpII)
-    bcp4 = '%s%s in %s %s' % (bcpI, accTable, outAccFileName, bcpII)
+    bcp2 = '%s%s in %s %s' % (bcpI, paneTable, outPaneFileName, bcpII)
+    bcp3 = '%s%s in %s %s' % (bcpI, accTable, outAccFileName, bcpII)
 
-    for bcpCmd in [bcp1, bcp2, bcp3, bcp4]:
+    for bcpCmd in [bcp1, bcp2, bcp3]:
 	diagFile.write('%s\n' % bcpCmd)
 	os.system(bcpCmd)
 
@@ -381,7 +389,6 @@ def bcpFiles(
 
     # update statistics
     db.sql('update statistics %s' % (imageTable), None)
-    db.sql('update statistics %s' % (noteTable), None)
     db.sql('update statistics %s' % (paneTable), None)
 
     return
@@ -432,14 +439,19 @@ def processImageFile():
         # if no errors, process
 
         outImageFile.write(str(imageKey) + TAB + \
+	    str(imageTypeKey) + TAB + \
 	    str(referenceKey) + TAB + \
+	    TAB + \
 	    xdim + TAB + \
 	    ydim + TAB + \
 	    figureLabel + TAB + \
-	    copyrightNote + TAB + \
+	    str(createdByKey) + TAB + \
+	    str(createdByKey) + TAB + \
 	    loaddate + TAB + loaddate + CRT)
 
         # MGI Accession ID for the image
+
+	mgiAccID = mgiPrefix + str(mgiKey)
 
 	outAccFile.write(str(accKey) + TAB + \
 	    mgiPrefix + str(mgiKey) + TAB + \
@@ -472,20 +484,15 @@ def processImageFile():
 
         accKey = accKey + 1
 
+	# Copyrights
+
+	if len(copyrightNote) > 0:
+            outCopyrightFile.write(mgiAccID + TAB + copyrightNote + CRT)
+
 	# Notes
 
 	if len(imageNote) > 0:
-
-            noteSeq = 1
-		
-            while len(imageNote) > 255:
-                outNoteFile.write(str(imageKey) + TAB + str(noteSeq) + TAB + imageNote[:255] + TAB + loaddate + TAB + loaddate + CRT)
-                newnote = imageNote[255:]
-                imageNote = newnote
-                noteSeq = noteSeq + 1
-
-            if len(imageNote) > 0:
-                outNoteFile.write(str(imageKey) + TAB + str(noteSeq) + TAB + imageNote[:255] + TAB + loaddate + TAB + loaddate + CRT)
+            outNoteFile.write(mgiAccID + TAB + copyrightNote + CRT)
 
 	imagePix[pixID] = imageKey
         imageKey = imageKey + 1
@@ -550,6 +557,9 @@ exit(0)
 
 #
 # $Log$
+# Revision 1.4  2004/09/16 16:12:15  lec
+# TR 6118
+#
 # Revision 1.3  2004/09/08 19:41:40  lec
 # TR 6118
 #
