@@ -22,7 +22,7 @@ touch $LOG
 date | tee -a $LOG
  
 # process the image files; load them into pixeldb and assign pix ids
-tr7167pixload.csh | tee -a $LOG
+#tr7167pixload.csh | tee -a $LOG
 
 # generate the MGI-format image files
 tr7167.py -S${DBSERVER} -D${DBNAME} -U${DBUSER} -P${DBPASSWORDFILE} | tee -a $LOG
@@ -31,7 +31,10 @@ tr7167.py -S${DBSERVER} -D${DBNAME} -U${DBUSER} -P${DBPASSWORDFILE} | tee -a $LO
 ${GXDIMAGELOAD} -S${DBSERVER} -D${DBNAME} -U${DBUSER} -P${DBPASSWORDFILE} -M${LOADMODE} | tee -a $LOG
 
 # process copyright
-${MGINOTELOAD} -S${DBSERVER} -D${DBNAME} -U${DBUSER} -P${DBPASSWORDFILE} -I${COPYRIGHTFILE} -M${LOADMODE} -O${OBJECTTYPE} -T\"${NOTETYPE}\" | tee -a ${LOG}
+${MGINOTELOAD} -S${DBSERVER} -D${DBNAME} -U${DBUSER} -P${DBPASSWORDFILE} -I${COPYRIGHTFILE} -M${LOADMODE} -O${OBJECTTYPE} -T\"${COPYRIGHTNOTETYPE}\" | tee -a ${LOG}
+
+# process caption
+${MGINOTELOAD} -S${DBSERVER} -D${DBNAME} -U${DBUSER} -P${DBPASSWORDFILE} -I${CAPTIONFILE} -M${LOADMODE} -O${OBJECTTYPE} -T\"${CAPTIONNOTETYPE}\" | tee -a ${LOG}
 
 # process the associations between assays and images
 tr7167assoc.py -S${DBSERVER} -D${DBNAME} -U${DBUSER} -P${DBPASSWORDFILE} -M${LOADMODE} | tee -a $LOG

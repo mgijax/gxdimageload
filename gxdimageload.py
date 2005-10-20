@@ -19,7 +19,7 @@
 #	And create input files for Note load (noteload):
 #
 #	IMG_Copyright.in
-#	IMG_Note.in
+#	IMG_Caption.in
 #
 # Requirements Satisfied by This Program:
 #
@@ -58,7 +58,7 @@
 #       ACC_Accession.bcp               Accession records
 #
 #	IMG_Copyright.in		input file for noteload
-#	IMG_Note.in			input file for noteload
+#	IMG_Caption.in			input file for noteload
 #
 #       Diagnostics file of all input parameters and SQL commands
 #       Error file
@@ -121,7 +121,7 @@ outImageFileName = datadir + '/' + imageTable + '.bcp'
 outPaneFileName = datadir + '/' + paneTable + '.bcp'
 outAccFileName = datadir + '/' + accTable + '.bcp'
 outCopyrightFileName = datadir + '/IMG_Copyright.in'
-outNoteFileName = datadir + '/IMG_Note.in'
+outNoteFileName = datadir + '/IMG_Caption.in'
 
 diagFileName = ''	# diagnostic file name
 errorFileName = ''	# error file name
@@ -561,6 +561,9 @@ exit(0)
 
 #
 # $Log$
+# Revision 1.6  2005/10/18 19:49:18  lec
+# new IMG schema
+#
 # Revision 1.5  2005/10/18 19:42:04  lec
 # new IMG schema
 #
