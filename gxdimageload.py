@@ -109,7 +109,7 @@ inPaneFileName = datadir + '/imagepane.txt'
 
 outImageFile = ''	# file descriptor
 outCopyrightFile = ''	# file descriptor
-outNoteFile = ''	# file descriptor
+outCaptionFile = ''	# file descriptor
 outPaneFile = ''	# file descriptor
 outAccFile = ''         # file descriptor
 
@@ -121,7 +121,7 @@ outImageFileName = datadir + '/' + imageTable + '.bcp'
 outPaneFileName = datadir + '/' + paneTable + '.bcp'
 outAccFileName = datadir + '/' + accTable + '.bcp'
 outCopyrightFileName = datadir + '/IMG_Copyright.in'
-outNoteFileName = datadir + '/IMG_Caption.in'
+outCaptionFileName = datadir + '/IMG_Caption.in'
 
 diagFileName = ''	# diagnostic file name
 errorFileName = ''	# error file name
@@ -209,7 +209,7 @@ def exit(
 def init():
     global diagFile, errorFile, inputFile, errorFileName, diagFileName, passwordFileName
     global mode, createdByKey
-    global outImageFile, outCopyrightFile, outNoteFile, outPaneFile, outAccFile
+    global outImageFile, outCopyrightFile, outCaptionFile, outPaneFile, outAccFile
     global inImageFile, inPaneFile
  
     try:
@@ -294,9 +294,9 @@ def init():
         exit(1, 'Could not open file %s\n' % outAccFileName)
 
     try:
-        outNoteFile = open(outNoteFileName, 'w')
+        outCaptionFile = open(outCaptionFileName, 'w')
     except:
-        exit(1, 'Could not open file %s\n' % outNoteFileName)
+        exit(1, 'Could not open file %s\n' % outCaptionFileName)
 
     try:
         outCopyrightFile = open(outCopyrightFileName, 'w')
@@ -496,7 +496,7 @@ def processImageFile():
 	# Notes
 
 	if len(imageNote) > 0:
-            outNoteFile.write(mgiAccID + TAB + copyrightNote + CRT)
+            outCaptionFile.write(mgiAccID + TAB + imageNote + CRT)
 
 	imagePix[pixID] = imageKey
         imageKey = imageKey + 1
@@ -561,6 +561,9 @@ exit(0)
 
 #
 # $Log$
+# Revision 1.7  2005/10/20 14:16:40  lec
+# TR 7167
+#
 # Revision 1.6  2005/10/18 19:49:18  lec
 # new IMG schema
 #

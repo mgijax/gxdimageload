@@ -84,9 +84,9 @@ passwordFileName = ''	# password file name
 # constants
 reference = 'J:93300'
 createdBy = os.environ['CREATEDBY']
-copyrightNote = 'This image is from Blackshaw S, PLoS Biol 2004 Oct;2(9):E247, an open-access article distributed under the terms of the Creative Commons Attribution License.'
+copyrightNote = 'Questions regarding this image or its use in publications should be directed to C. L. Cepko at E-mail: cepko@genetics.med.harvard.edu.'
 paneLabel = ''
-imageNote = ''
+imageNote = 'This image was provided by the authors as a direct GXD submission and was not published within the article or as supplementary material.'
 
 # Purpose: displays correct usage of this program
 # Returns: nothing
