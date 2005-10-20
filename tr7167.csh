@@ -13,14 +13,14 @@
 
 cd `dirname $0` && source ./tr7167.config
 
+cd ${DATADIR}
+
 setenv LOG $0.log
 rm -rf $LOG
 touch $LOG
  
 date | tee -a $LOG
  
-cd ${DATADIR}
-
 # process the image files; load them into pixeldb and assign pix ids
 tr7167pixload.csh | tee -a $LOG
 
