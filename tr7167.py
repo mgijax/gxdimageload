@@ -165,7 +165,8 @@ def init():
     db.useOneConnection(1)
  
     fdate = mgi_utils.date('%m%d%Y')	# current date
-    diagFileName = sys.argv[0] + '.' + fdate + '.diagnostics'
+    head, tail = os.path.split(sys.argv[0])
+    diagFileName = tail + '.' + fdate + '.diagnostics'
 
     try:
         diagFile = open(diagFileName, 'w')

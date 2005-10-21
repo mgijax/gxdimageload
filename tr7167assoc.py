@@ -199,8 +199,9 @@ def init():
     db.useOneConnection(1)
  
     fdate = mgi_utils.date('%m%d%Y')	# current date
-    diagFileName = sys.argv[0] + '.' + fdate + '.diagnostics'
-    errorFileName = sys.argv[0] + '.' + fdate + '.error'
+    head, tail = os.path.split(sys.argv[0])
+    diagFileName = tail + '.' + fdate + '.diagnostics'
+    errorFileName = tail + '.' + fdate + '.error'
 
     try:
         diagFile = open(diagFileName, 'w')

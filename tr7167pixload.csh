@@ -2,7 +2,7 @@
 
 cd `dirname $0` && source ./tr7167.config
 
-setenv JPGDIRECTORY	KuoImages
+setenv JPGDIRECTORY	${FILEDIR}/KuoImages
 setenv OUTPUTFILE	${DATADIR}/KuoImages.txt
 
 set accID=`cat $PIXELDBCOUNTER`
