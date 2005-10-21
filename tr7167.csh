@@ -15,14 +15,14 @@ cd `dirname $0` && source ./tr7167.config
 
 cd ${DATADIR}
 
-setenv LOG $0.log
+setenv LOG `basename $0`.log
 rm -rf $LOG
 touch $LOG
  
 date | tee -a $LOG
  
 # process the image files; load them into pixeldb and assign pix ids
-#${GXDIMAGEINSTALLDIR}/tr7167pixload.csh | tee -a $LOG
+${GXDIMAGEINSTALLDIR}/tr7167pixload.csh | tee -a $LOG
 
 # generate the MGI-format image files
 ${GXDIMAGEINSTALLDIR}/tr7167.py -S${DBSERVER} -D${DBNAME} -U${DBUSER} -P${DBPASSWORDFILE} | tee -a $LOG
