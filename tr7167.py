@@ -86,7 +86,7 @@ reference = 'J:93300'
 createdBy = os.environ['CREATEDBY']
 copyrightNote = 'Questions regarding this image or its use in publications should be directed to C. L. Cepko at E-mail: cepko@genetics.med.harvard.edu.'
 paneLabel = ''
-imageNote = 'This image was provided by the authors as a direct GXD submission and was not published within the article or as supplementary material.'
+imageNote = 'This image was provided by the authors as a direct GXD submission.'
 
 # Purpose: displays correct usage of this program
 # Returns: nothing
