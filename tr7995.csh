@@ -22,20 +22,19 @@ touch $LOG
 date | tee -a $LOG
  
 # generate the MGI-format image files
-#./tr7995.py | tee -a $LOG
+./tr7995.py | tee -a $LOG
 
 # process the MGI-format image files
-#${GXDIMAGELOAD} -S${MGD_DBSERVER} -D${MGD_DBNAME} -U${MGD_DBUSER} -P${MGD_DBPASSWORDFILE} -M${LOADMODE} | tee -a $LOG
+${GXDIMAGELOAD} -S${MGD_DBSERVER} -D${MGD_DBNAME} -U${MGD_DBUSER} -P${MGD_DBPASSWORDFILE} -M${LOADMODE} | tee -a $LOG
 
 # process copyright
 ${MGINOTELOAD} -S${MGD_DBSERVER} -D${MGD_DBNAME} -U${MGD_DBUSER} -P${MGD_DBPASSWORDFILE} -I${COPYRIGHTFILE} -M${NOTELOADMODE} -O${OBJECTTYPE} -T\"${COPYRIGHTNOTETYPE}\" | tee -a ${LOG}
 
 # process caption
 ${MGINOTELOAD} -S${MGD_DBSERVER} -D${MGD_DBNAME} -U${MGD_DBUSER} -P${MGD_DBPASSWORDFILE} -I${CAPTIONFILE} -M${NOTELOADMODE} -O${OBJECTTYPE} -T\"${CAPTIONNOTETYPE}\" | tee -a ${LOG}
-exit 0
 
 # process the associations between assays and images
-${GXDIMAGEINSTALLDIR}/tr7995assoc.py -S${MGD_DBSERVER} -D${MGD_DBNAME} -U${MGD_DBUSER} -P${MGD_DBPASSWORDFILE} -M${LOADMODE} | tee -a $LOG
+./tr7995assoc.py -S${MGD_DBSERVER} -D${MGD_DBNAME} -U${MGD_DBUSER} -P${MGD_DBPASSWORDFILE} -M${LOADMODE} | tee -a $LOG
 
 date | tee -a $LOG
 
