@@ -1,8 +1,5 @@
 #!/usr/local/bin/python
 
-# $Header$
-# $Name$
-
 #
 # Program: gxdimageload.py
 #
@@ -37,9 +34,9 @@
 #
 #       Image file, a tab-delimited file in the format:
 #		field 1: Reference (J:####)
-#		field 2: X Dimension
-#		field 3: Y Dimension
-#		field 4: PIX ID (PIX:#####)
+#		field 2: PIX ID (PIX:#####)
+#		field 3: X Dimension
+#		field 4: Y Dimension
 #               field 5: Figure Label
 #               field 6: Copyright Note
 #               field 7: Image Note
@@ -92,7 +89,8 @@ bcpdelim = TAB		# bcp file delimiter
 
 bcpon = 1		# can the bcp files be bcp-ed into the database?  default is yes.
 
-datadir = os.environ['GXDIMGLOADDATADIR']	# directory which contains the data files
+datadir = os.environ['DATADIR']	# directory which contains the data files
+logdir = os.environ['LOGDIR']  # directory which contains the log files
 
 diagFile = ''		# diagnostic file descriptor
 errorFile = ''		# error file descriptor
@@ -120,8 +118,8 @@ accTable = 'ACC_Accession'
 outImageFileName = datadir + '/' + imageTable + '.bcp'
 outPaneFileName = datadir + '/' + paneTable + '.bcp'
 outAccFileName = datadir + '/' + accTable + '.bcp'
-outCopyrightFileName = datadir + '/IMG_Copyright.in'
-outCaptionFileName = datadir + '/IMG_Caption.in'
+outCopyrightFileName = os.environ['COPYRIGHTFILE']
+outCaptionFileName = os.environ['CAPTIONFILE']
 
 diagFileName = ''	# diagnostic file name
 errorFileName = ''	# error file name
@@ -252,8 +250,8 @@ def init():
  
     fdate = mgi_utils.date('%m%d%Y')	# current date
     head, tail = os.path.split(sys.argv[0])
-    diagFileName = tail + '.' + fdate + '.diagnostics'
-    errorFileName = tail + '.' + fdate + '.error'
+    diagFileName = logdir + '/' + tail + '.' + fdate + '.diagnostics'
+    errorFileName = logdir + '/' + tail + '.' + fdate + '.error'
 
     try:
         diagFile = open(diagFileName, 'w')
@@ -562,6 +560,9 @@ exit(0)
 
 #
 # $Log$
+# Revision 1.9  2005/10/21 17:47:14  lec
+# TR 7167
+#
 # Revision 1.8  2005/10/20 14:19:58  lec
 # TR 7167
 #

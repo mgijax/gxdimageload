@@ -10,14 +10,12 @@
 # install directory
 setenv GXDIMGLOADINSTALLDIR	/usr/local/mgi/live/dataload/gxdimageload
 
-# system doc directory
-setenv GXDIMGLOADSYSTEMDOCDIR	$GXDIMGLOADINSTALLDIR/system_docs
+setenv GXDIMAGELOAD             /usr/local/mgi/live/dataload/gxdimageload/gxdimageload.py
+setenv MGINOTELOAD		/usr/local/mgi/live/dataload/noteload/mginoteload.py
 
 # data, log and report directories
-setenv FILEDIR		/data/loads/mgi/gxdimageload
-setenv DATADIR		${FILEDIR}/data
-setenv LOGDIR		${FILEDIR}/logs
-setenv RPTDIR		${FILEDIR}/reports
+setenv COPYRIGHTFILE    ${DATADIR}/IMG_Copyright.in
+setenv CAPTIONFILE      ${DATADIR}/IMG_Caption.in
 
 # insituload data directory
 setenv INSITUDATADIR	/data/loads/mgi/assayload/data/insitu
@@ -33,9 +31,14 @@ setenv PIXELDBCOUNTER	$PIXELDBDATA/accession/counter
 
 # Load Mode
 setenv LOADMODE		load
+setenv NOTELOADMODE	load
 
 # Created By
 setenv CREATEDBY	jfinger
+
+setenv COPYRIGHTNOTETYPE "Copyright"
+setenv CAPTIONNOTETYPE  "Caption"
+setenv OBJECTTYPE	Image
 
 source ${SCHEMADIR}/Configuration
 

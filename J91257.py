@@ -58,7 +58,6 @@
 import sys
 import os
 import string
-import regsub
 import mgi_utils
 import jpeginfo
 
@@ -253,6 +252,9 @@ process(inInSituFile3, 16)
 exit(0)
 
 # $Log$
+# Revision 1.10  2004/11/29 20:45:39  lec
+# TR 6118
+#
 # Revision 1.9  2004/11/19 19:13:44  lec
 # TR 6118
 #
