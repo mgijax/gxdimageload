@@ -51,6 +51,7 @@ import os
 import string
 import mgi_utils
 import jpeginfo
+import assoclib
 
 #globals
 
@@ -134,15 +135,7 @@ def init():
     except:
         exit(1, 'Could not open file %s\n' % outPaneFileName)
 
-    # pixFileName:pixID mapping
-    pixelDict = {}
-    for line in inPixFile.readlines():
-	tokens = string.split(line[:-1], TAB)
-	pixFileName = tokens[0]
-	pixID = tokens[1]
-	key = pixFileName
-	value = pixID
-	pixelDict[key] = value
+    pixelDict = assoclib.readPixelFile(inPixFile)
     inPixFile.close()
 
 # Purpose:  processes data

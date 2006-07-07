@@ -558,33 +558,3 @@ setPrimaryKeys()
 process()
 exit(0)
 
-#
-# $Log$
-# Revision 1.9  2005/10/21 17:47:14  lec
-# TR 7167
-#
-# Revision 1.8  2005/10/20 14:19:58  lec
-# TR 7167
-#
-# Revision 1.7  2005/10/20 14:16:40  lec
-# TR 7167
-#
-# Revision 1.6  2005/10/18 19:49:18  lec
-# new IMG schema
-#
-# Revision 1.5  2005/10/18 19:42:04  lec
-# new IMG schema
-#
-# Revision 1.4  2004/09/16 16:12:15  lec
-# TR 6118
-#
-# Revision 1.3  2004/09/08 19:41:40  lec
-# TR 6118
-#
-# Revision 1.2  2003/09/24 12:30:44  lec
-# TR 5154
-#
-# Revision 1.1  2003/07/16 19:41:09  lec
-# TR 4800
-#
-#

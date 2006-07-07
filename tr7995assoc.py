@@ -308,12 +308,7 @@ def bcpFiles():
 
 def process():
 
-    pixelDict = {}
-    for line in inPixFile.readlines():
-	tokens = string.split(line[:-1], TAB)
-	pixFileName = tokens[0]
-	pixID = tokens[1]
-	pixelDict[pixFileName] = pixID
+    pixelDict = assoclib.readPixelFile(inPixFile)
 
     imgDict = {}
     for line in inImageFile.readlines():

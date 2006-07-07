@@ -1,7 +1,5 @@
 #!/usr/local/bin/python
 
-# $Header$
-
 #
 # Program: assoclib.py
 #
