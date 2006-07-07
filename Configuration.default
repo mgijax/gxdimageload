@@ -32,7 +32,7 @@ setenv PIXELDBCOUNTER	${PIXELDBDATA}/accession/counter
 
 # Load Mode
 setenv LOADMODE		load
-setenv NOTELOADMODE	load
+setenv NOTELOADMODE	incremental
 
 # Created By
 setenv CREATEDBY	jfinger
