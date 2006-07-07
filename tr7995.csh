@@ -13,8 +13,6 @@
 
 cd `dirname $0` && source ./tr7995.config
 
-cd ${DATADIR}
-
 setenv LOG `basename $0`.log
 rm -rf $LOG
 touch $LOG
