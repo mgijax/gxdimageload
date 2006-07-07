@@ -75,7 +75,7 @@ pixelDict = {}
 
 # constants
 reference = 'J:103446'
-copyrightNote = 'This image was contributed directly to GXD by the authors through the Mahone Center for Neuro-Oncology Funcational Genomic Atlas of the Mouse Brain database at http://mahoney.chip.org/mahoney/RBP/.  Questions regarding this image or its use in publications should be directed to P.M. Silver at E-mail:  pamela_silver@hms.harvard.edu.'
+copyrightNote = 'This image was contributed directly to GXD by the authors through the Mahoney Center for Neuro-Oncology Functional Genomic Atlas of the Mouse Brain database at http://mahoney.chip.org/mahoney/RBP/.  Questions regarding this image or its use in publications should be directed to P.M. Silver at E-mail:  pamela_silver@hms.harvard.edu.'
 paneLabel = ''
 imageNote = ''
 
