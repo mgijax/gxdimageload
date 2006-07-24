@@ -55,7 +55,47 @@ rm -rf $OUTPUTFILE
 touch $OUTPUTFILE
 echo "starting pix id: " $accID
 
-foreach j ($JPGDIRECTORY/*.jpg)
+foreach j ($JPGDIRECTORY/[12345]*.jpg)
+	set n=`basename $j`
+	echo $n
+	cp $j $PIXELDBDATA/$accID.jpg
+	echo "$n	$accID" >> $OUTPUTFILE
+	set accID=`expr $accID + 1`
+end
+
+foreach j ($JPGDIRECTORY/[678]*.jpg)
+	set n=`basename $j`
+	echo $n
+	cp $j $PIXELDBDATA/$accID.jpg
+	echo "$n	$accID" >> $OUTPUTFILE
+	set accID=`expr $accID + 1`
+end
+
+foreach j ($JPGDIRECTORY/9[0-8]*.jpg)
+	set n=`basename $j`
+	echo $n
+	cp $j $PIXELDBDATA/$accID.jpg
+	echo "$n	$accID" >> $OUTPUTFILE
+	set accID=`expr $accID + 1`
+end
+
+foreach j ($JPGDIRECTORY/99[013456789]*.jpg)
+	set n=`basename $j`
+	echo $n
+	cp $j $PIXELDBDATA/$accID.jpg
+	echo "$n	$accID" >> $OUTPUTFILE
+	set accID=`expr $accID + 1`
+end
+
+foreach j ($JPGDIRECTORY/992[0123]*.jpg)
+	set n=`basename $j`
+	echo $n
+	cp $j $PIXELDBDATA/$accID.jpg
+	echo "$n	$accID" >> $OUTPUTFILE
+	set accID=`expr $accID + 1`
+end
+
+foreach j ($JPGDIRECTORY/992[456789]*.jpg)
 	set n=`basename $j`
 	echo $n
 	cp $j $PIXELDBDATA/$accID.jpg
