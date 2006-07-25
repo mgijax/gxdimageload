@@ -163,7 +163,6 @@ def process(fp):
 
 	# else process an actual data line
 
-	print tokens
 	imageFile = tokens[0] + '.jpg'
 	imageFileLabel = tokens[0]
 	imageNote = tokens[1]
