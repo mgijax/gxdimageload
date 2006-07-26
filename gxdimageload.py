@@ -52,7 +52,7 @@
 #
 #       IMG_Image.bcp			master Image records
 #	IMG_ImagePane.bcp		Image Pane records
-#       ACC_Accession.bcp               Accession records
+#       IMG_ACC_Accession.bcp           Accession records
 #
 #	IMG_Copyright.in		input file for noteload
 #	IMG_Caption.in			input file for noteload
@@ -113,11 +113,11 @@ outAccFile = ''         # file descriptor
 
 imageTable = 'IMG_Image'
 paneTable = 'IMG_ImagePane'
-accTable = 'IMG_ACC_Accession'
+accTable = 'ACC_Accession'
 
 outImageFileName = datadir + '/' + imageTable + '.bcp'
 outPaneFileName = datadir + '/' + paneTable + '.bcp'
-outAccFileName = datadir + '/' + accTable + '.bcp'
+outAccFileName = datadir + '/IMG_' + accTable + '.bcp'
 outCopyrightFileName = os.environ['COPYRIGHTFILE']
 outCaptionFileName = os.environ['CAPTIONFILE']
 
