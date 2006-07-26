@@ -113,7 +113,7 @@ outAccFile = ''         # file descriptor
 
 imageTable = 'IMG_Image'
 paneTable = 'IMG_ImagePane'
-accTable = 'ACC_Accession'
+accTable = 'IMG_ACC_Accession'
 
 outImageFileName = datadir + '/' + imageTable + '.bcp'
 outPaneFileName = datadir + '/' + paneTable + '.bcp'
