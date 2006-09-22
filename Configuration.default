@@ -12,20 +12,13 @@ if ( ${?MGICONFIG} == 0 ) then
 endif
 
 source ${MGICONFIG}/master.config.csh
-source ${MGD_DBSCHEMADIR}/Configuration
-
-# install directory
-setenv GXDIMGLOADINSTALLDIR	${DATALOAD}/gxdimageload
-
-setenv GXDIMAGELOAD             ${DATALOAD}/gxdimageload/gxdimageload.py
-setenv MGINOTELOAD		${DATALOAD}/noteload/mginoteload.py
 
 # data, log and report directories
 setenv COPYRIGHTFILE    ${DATADIR}/IMG_Copyright.in
 setenv CAPTIONFILE      ${DATADIR}/IMG_Caption.in
 
 # Pixel DB Data Directory
-setenv PIXELDBDATA	${USRLOCALMGI}/pixeldb_data
+setenv PIXELDBDATA	/data/pixeldb
 
 # Pixel DB Accession Counter
 setenv PIXELDBCOUNTER	${PIXELDBDATA}/accession/counter
