@@ -21,12 +21,7 @@
 # Requirements Satisfied by This Program:
 #
 # Usage:
-#	program.py
-#	-S = database server
-#	-D = database
-#	-U = user
-#	-P = password file
-#	-M = mode
+#	gxdimageload.py
 #
 # Envvars:
 #
@@ -74,7 +69,6 @@
 import sys
 import os
 import string
-import getopt
 import db
 import mgi_utils
 import accessionlib
@@ -82,15 +76,23 @@ import loadlib
 
 #globals
 
+#
+# from configuration file
+#
+mode = os.environ['LOADMODE']
+createdBy = os.environ['CREATEDBY']
+passwordFileName = os.environ['MGI_DBPASSWORDFILE']
+datadir = os.environ['DATADIR']	# directory which contains the data files
+logdir = os.environ['LOGDIR']  # directory which contains the log files
+outCopyrightFileName = os.environ['COPYRIGHTFILE']
+outCaptionFileName = os.environ['CAPTIONFILE']
+
 DEBUG = 0		# if 0, not in debug mode
 TAB = '\t'		# tab
 CRT = '\n'		# carriage return/newline
 bcpdelim = TAB		# bcp file delimiter
 
 bcpon = 1		# can the bcp files be bcp-ed into the database?  default is yes.
-
-datadir = os.environ['DATADIR']	# directory which contains the data files
-logdir = os.environ['LOGDIR']  # directory which contains the log files
 
 diagFile = ''		# diagnostic file descriptor
 errorFile = ''		# error file descriptor
@@ -118,16 +120,9 @@ accTable = 'ACC_Accession'
 outImageFileName = datadir + '/' + imageTable + '.bcp'
 outPaneFileName = datadir + '/' + paneTable + '.bcp'
 outAccFileName = datadir + '/IMG_' + accTable + '.bcp'
-outCopyrightFileName = os.environ['COPYRIGHTFILE']
-outCaptionFileName = os.environ['CAPTIONFILE']
 
 diagFileName = ''	# diagnostic file name
 errorFileName = ''	# error file name
-passwordFileName = ''	# password file name
-
-mode = ''		# processing mode (load, preview)
-
-createdBy = os.environ['CREATEDBY']
 
 # primary keys
 
@@ -156,21 +151,6 @@ imagePix = {}
 
 loaddate = loadlib.loaddate
 
-# Purpose: displays correct usage of this program
-# Returns: nothing
-# Assumes: nothing
-# Effects: exits with status of 1
-# Throws: nothing
- 
-def showUsage():
-    usage = 'usage: %s -S server\n' % sys.argv[0] + \
-        '-D database\n' + \
-        '-U user\n' + \
-        '-P password file\n' + \
-        '-M mode\n'
-
-    exit(1, usage)
- 
 # Purpose: prints error message and exits
 # Returns: nothing
 # Assumes: nothing
@@ -205,47 +185,10 @@ def exit(
 # Throws: nothing
 
 def init():
-    global diagFile, errorFile, inputFile, errorFileName, diagFileName, passwordFileName
-    global mode, createdByKey
+    global diagFile, errorFile, inputFile, errorFileName, diagFileName
     global outImageFile, outCopyrightFile, outCaptionFile, outPaneFile, outAccFile
     global inImageFile, inPaneFile
  
-    try:
-        optlist, args = getopt.getopt(sys.argv[1:], 'S:D:U:P:M:')
-    except:
-        showUsage()
- 
-    #
-    # Set server, database, user, passwords depending on options specified
-    #
- 
-    server = ''
-    database = ''
-    user = ''
-    password = ''
- 
-    for opt in optlist:
-        if opt[0] == '-S':
-            server = opt[1]
-        elif opt[0] == '-D':
-            database = opt[1]
-        elif opt[0] == '-U':
-            user = opt[1]
-        elif opt[0] == '-P':
-            passwordFileName = opt[1]
-        elif opt[0] == '-M':
-            mode = opt[1]
-        else:
-            showUsage()
-
-    # User must specify Server, Database, User and Password
-    password = string.strip(open(passwordFileName, 'r').readline())
-    if server == '' or database == '' or user == '' or password == '' \
-	or mode == '':
-        showUsage()
-
-    # Initialize db.py DBMS parameters
-    db.set_sqlLogin(user, password, server, database)
     db.useOneConnection(1)
  
     fdate = mgi_utils.date('%m%d%Y')	# current date
@@ -309,9 +252,8 @@ def init():
     db.set_sqlLogFD(diagFile)
 
     diagFile.write('Start Date/Time: %s\n' % (mgi_utils.date()))
-    diagFile.write('Server: %s\n' % (server))
-    diagFile.write('Database: %s\n' % (database))
-    diagFile.write('User: %s\n' % (user))
+    diagFile.write('Server: %s\n' % (db.get_sqlServer()))
+    diagFile.write('Database: %s\n' % (db.get_sqlDatabase()))
 
     errorFile.write('Start Date/Time: %s\n\n' % (mgi_utils.date()))
 

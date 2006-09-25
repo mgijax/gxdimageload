@@ -14,12 +14,7 @@
 # Requirements Satisfied by This Program:
 #
 # Usage:
-#	program.py
-#	-S = database server
-#	-D = database
-#	-U = user
-#	-P = password file
-#	-M = mode
+#	tr7167assoc.py
 #
 # Envvars:
 #
@@ -59,12 +54,19 @@
 import sys
 import os
 import string
-import getopt
 import db
 import mgi_utils
 import assoclib
 
 #globals
+
+#
+# from configuration file
+#
+mode = os.environ['LOADMODE']
+createdBy = os.environ['CREATEDBY']
+passwordFileName = os.environ['MGI_DBPASSWORDFILE']
+datadir = os.environ['DATADIR']	# directory which contains the data files
 
 DEBUG = 0		# if 0, not in debug mode
 TAB = '\t'		# tab
@@ -72,8 +74,6 @@ CRT = '\n'		# carriage return/newline
 bcpdelim = TAB		# bcp file delimiter
 
 bcpon = 1		# can the bcp files be bcp-ed into the database?  default is yes.
-
-datadir = os.environ['DATADIR']	# directory which contains the data files
 
 diagFile = ''		# diagnostic file descriptor
 errorFile = ''		# error file descriptor
@@ -98,11 +98,6 @@ outAssocFileName = datadir + '/' + assocTable + '.bcp'
 
 diagFileName = ''	# diagnostic file name
 errorFileName = ''	# error file name
-passwordFileName = ''	# password file name
-
-mode = ''		# processing mode (load, preview)
-
-createdBy = os.environ['CREATEDBY']
 
 cdate = mgi_utils.date('%m/%d/%Y')	# current date
 
@@ -155,47 +150,10 @@ def exit(
 # Throws: nothing
 
 def init():
-    global diagFile, errorFile, errorFileName, diagFileName, passwordFileName
+    global diagFile, errorFile, errorFileName, diagFileName
     global inAssayFile, inPixFile, inImageFile
-    global mode
     global outAssocFile
  
-    try:
-        optlist, args = getopt.getopt(sys.argv[1:], 'S:D:U:P:M:')
-    except:
-        showUsage()
- 
-    #
-    # Set server, database, user, passwords depending on options specified
-    #
- 
-    server = ''
-    database = ''
-    user = ''
-    password = ''
- 
-    for opt in optlist:
-        if opt[0] == '-S':
-            server = opt[1]
-        elif opt[0] == '-D':
-            database = opt[1]
-        elif opt[0] == '-U':
-            user = opt[1]
-        elif opt[0] == '-P':
-            passwordFileName = opt[1]
-        elif opt[0] == '-M':
-            mode = opt[1]
-        else:
-            showUsage()
-
-    # User must specify Server, Database, User and Password
-    password = string.strip(open(passwordFileName, 'r').readline())
-    if server == '' or database == '' or user == '' or password == '' \
-	or mode == '':
-        showUsage()
-
-    # Initialize db.py DBMS parameters
-    db.set_sqlLogin(user, password, server, database)
     db.useOneConnection(1)
  
     fdate = mgi_utils.date('%m%d%Y')	# current date
@@ -284,12 +242,10 @@ def bcpFiles():
 
     bcpI = 'cat %s | bcp %s..' % (passwordFileName, db.get_sqlDatabase())
     bcpII = '-c -t\"%s' % (bcpdelim) + '" -S%s -U%s' % (db.get_sqlServer(), db.get_sqlUser())
-#    truncateDB = 'dump transaction %s with truncate_only' % (db.get_sqlDatabase())
 
     bcp1 = '%s%s in %s %s' % (bcpI, assocTable, outAssocFileName, bcpII)
     diagFile.write('%s\n' % bcp1)
     os.system(bcp1)
-#    db.sql(truncateDB, None)
 
     # update statistics
     db.sql('update statistics %s' % (assocTable), None)

@@ -53,7 +53,6 @@
 import sys
 import os
 import string
-import getopt
 import db
 import mgi_utils
 import jpeginfo
@@ -79,7 +78,6 @@ imageFile = ''
 paneFile = ''
 diagFile = ''		# diagnostic file descriptor
 diagFileName = ''	# diagnostic file name
-passwordFileName = ''	# password file name
 
 # constants
 reference = 'J:93300'
@@ -88,20 +86,6 @@ copyrightNote = 'Questions regarding this image or its use in publications shoul
 paneLabel = ''
 imageNote = 'This image was provided by the authors as a direct GXD submission.'
 
-# Purpose: displays correct usage of this program
-# Returns: nothing
-# Assumes: nothing
-# Effects: exits with status of 1
-# Throws: nothing
- 
-def showUsage():
-    usage = 'usage: %s -S server\n' % sys.argv[0] + \
-        '-D database\n' + \
-        '-U user\n' + \
-        '-P password file\n'
-
-    exit(1, usage)
- 
 # Purpose: prints error message and exits
 # Returns: nothing
 # Assumes: nothing
@@ -129,39 +113,6 @@ def exit(
 def init():
     global diagFile, inImageFile, inPixFile, imageFile, paneFile
  
-    try:
-        optlist, args = getopt.getopt(sys.argv[1:], 'S:D:U:P:')
-    except:
-        showUsage()
- 
-    #
-    # Set server, database, user, passwords depending on options specified
-    #
- 
-    server = ''
-    database = ''
-    user = ''
-    password = ''
- 
-    for opt in optlist:
-        if opt[0] == '-S':
-            server = opt[1]
-        elif opt[0] == '-D':
-            database = opt[1]
-        elif opt[0] == '-U':
-            user = opt[1]
-        elif opt[0] == '-P':
-            passwordFileName = opt[1]
-        else:
-            showUsage()
-
-    # User must specify Server, Database, User and Password
-    password = string.strip(open(passwordFileName, 'r').readline())
-    if server == '' or database == '' or user == '' or password == '':
-        showUsage()
-
-    # Initialize db.py DBMS parameters
-    db.set_sqlLogin(user, password, server, database)
     db.useOneConnection(1)
  
     fdate = mgi_utils.date('%m%d%Y')	# current date
