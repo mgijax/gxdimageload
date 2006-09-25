@@ -23,7 +23,7 @@ date | tee -a $LOG
 ./tr7819.py | tee -a $LOG
 
 # process the MGI-format image files
-${GXDIMAGELOAD}/gxdimageload.py -S${MGD_DBSERVER} -D${MGD_DBNAME} -U${MGI_DBUSER} -P${MGI_DBPASSWORDFILE} -M${LOADMODE} | tee -a $LOG
+${GXDIMAGELOAD}/gxdimageload.py | tee -a $LOG
 
 cd ${DATADIR}
 
@@ -34,7 +34,7 @@ ${NOTELOAD}/mginoteload.py -S${MGD_DBSERVER} -D${MGD_DBNAME} -U${MGI_DBUSER} -P$
 ${NOTELOAD}/mginoteload.py -S${MGD_DBSERVER} -D${MGD_DBNAME} -U${MGI_DBUSER} -P${MGI_DBPASSWORDFILE} -I${CAPTIONFILE} -M${NOTELOADMODE} -O${OBJECTTYPE} -T\"${CAPTIONNOTETYPE}\" | tee -a ${LOG}
 
 # process the associations between assays and images
-#./tr7819assoc.py -S${MGD_DBSERVER} -D${MGD_DBNAME} -U${MGI_DBUSER} -P${MGI_DBPASSWORDFILE} -M${LOADMODE} | tee -a $LOG
+#./tr7819assoc.py | tee -a $LOG
 
 date | tee -a $LOG
 
