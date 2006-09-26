@@ -65,7 +65,8 @@ import assoclib
 #
 mode = os.environ['LOADMODE']
 createdBy = os.environ['CREATEDBY']
-passwordFileName = os.environ['MGI_DBPASSWORDFILE']
+user = os.environ['MGD_DBUSER']
+passwordFileName = os.environ['MGD_DBPASSWORDFILE']
 datadir = os.environ['DATADIR']	# directory which contains the data files
 
 DEBUG = 0		# if 0, not in debug mode
@@ -155,6 +156,8 @@ def init():
     global outAssocFile
  
     db.useOneConnection(1)
+    db.set_sqlUser(user)
+    db.set_sqlPassword(passwordFileName)
  
     fdate = mgi_utils.date('%m%d%Y')	# current date
     head, tail = os.path.split(sys.argv[0])

@@ -68,7 +68,8 @@ import assoclib
 #
 mode = os.environ['LOADMODE']
 createdBy = os.environ['CREATEDBY']
-passwordFileName = os.environ['MGI_DBPASSWORDFILE']
+user = os.environ['MGD_DBUSER']
+passwordFileName = os.environ['MGD_DBPASSWORDFILE']
 datadir = os.environ['DATADIR']	# directory which contains the data files
 logdir = os.environ['LOGDIR']  # directory which contains the log files
 
@@ -144,6 +145,8 @@ def init():
     global outAssocFile
  
     db.useOneConnection(1)
+    db.set_sqlUser(user)
+    db.set_sqlPassword(passwordFileName)
  
     fdate = mgi_utils.date('%m%d%Y')	# current date
     head, tail = os.path.split(sys.argv[0])
@@ -230,12 +233,10 @@ def bcpFiles():
 
     bcpI = 'cat %s | bcp %s..' % (passwordFileName, db.get_sqlDatabase())
     bcpII = '-c -t\"%s' % (bcpdelim) + '" -S%s -U%s' % (db.get_sqlServer(), db.get_sqlUser())
-#    truncateDB = 'dump transaction %s with truncate_only' % (db.get_sqlDatabase())
 
     bcp1 = '%s%s in %s %s' % (bcpI, assocTable, outAssocFileName, bcpII)
     diagFile.write('%s\n' % bcp1)
     os.system(bcp1)
-#    db.sql(truncateDB, None)
 
     # update statistics
     db.sql('update statistics %s' % (assocTable), None)
