@@ -34,7 +34,7 @@ ${NOTELOAD}/mginoteload.py -S${MGD_DBSERVER} -D${MGD_DBNAME} -U${MGI_DBUSER} -P$
 ${NOTELOAD}/mginoteload.py -S${MGD_DBSERVER} -D${MGD_DBNAME} -U${MGI_DBUSER} -P${MGI_DBPASSWORDFILE} -I${CAPTIONFILE} -M${NOTELOADMODE} -O${OBJECTTYPE} -T\"${CAPTIONNOTETYPE}\" | tee -a ${LOG}
 
 # process the associations between assays and images
-./tr7982assoc.py | tee -a $LOG
+${GXDIMAGELOAD}/tr7982assoc.py | tee -a $LOG
 
 date | tee -a $LOG
 
