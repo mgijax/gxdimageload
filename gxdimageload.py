@@ -9,15 +9,6 @@
 #
 #	To load new Images into IMG Structures
 #
-#	IMG_Image
-#	IMG_ImagePane
-#	ACC_Accession
-#
-#	And create input files for Note load (noteload):
-#
-#	IMG_Copyright.in
-#	IMG_Caption.in
-#
 # Requirements Satisfied by This Program:
 #
 # Usage:
@@ -29,12 +20,13 @@
 #
 #       Image file, a tab-delimited file in the format:
 #		field 1: Reference (J:####)
-#		field 2: PIX ID (PIX:#####)
-#		field 3: X Dimension
-#		field 4: Y Dimension
-#               field 5: Figure Label
-#               field 6: Copyright Note
-#               field 7: Image Note
+#		field 2: Full Size Image Key (can be blank)
+#		field 3: PIX ID (PIX:#####)
+#		field 4: X Dimension
+#		field 5: Y Dimension
+#               field 6: Figure Label
+#               field 7: Copyright Note
+#               field 8: Image Note
 #
 #	Image Pane file, a tab-delimited file in the format:
 #		field 1: PIX ID (PIX:####)
@@ -52,6 +44,8 @@
 #	IMG_Copyright.in		input file for noteload
 #	IMG_Caption.in			input file for noteload
 #
+#	IMG_Image.sql			file of SQL updates
+#
 #       Diagnostics file of all input parameters and SQL commands
 #       Error file
 #
@@ -64,6 +58,12 @@
 # Bugs:
 #
 # Implementation:
+#
+# History
+#
+# 11/01/2006	lec
+#	- TR 8002; changes to support bulk loading of thumbnail images
+#	  and associations between thumbnails and pre-existing full size images.
 #
 
 import sys
@@ -83,6 +83,7 @@ mode = os.environ['LOADMODE']
 createdBy = os.environ['CREATEDBY']
 user = os.environ['MGD_DBUSER']
 passwordFileName = os.environ['MGD_DBPASSWORDFILE']
+
 datadir = os.environ['DATADIR']	# directory which contains the data files
 logdir = os.environ['LOGDIR']  # directory which contains the log files
 outCopyrightFileName = os.environ['COPYRIGHTFILE']
@@ -113,6 +114,7 @@ outCopyrightFile = ''	# file descriptor
 outCaptionFile = ''	# file descriptor
 outPaneFile = ''	# file descriptor
 outAccFile = ''         # file descriptor
+sqlFile = ''		# file descriptor
 
 imageTable = 'IMG_Image'
 paneTable = 'IMG_ImagePane'
@@ -121,6 +123,7 @@ accTable = 'ACC_Accession'
 outImageFileName = datadir + '/' + imageTable + '.bcp'
 outPaneFileName = datadir + '/' + paneTable + '.bcp'
 outAccFileName = datadir + '/IMG_' + accTable + '.bcp'
+sqlFileName = datadir + '/' + imageTable + '.sql'
 
 diagFileName = ''	# diagnostic file name
 errorFileName = ''	# error file name
@@ -136,6 +139,7 @@ createdByKey = ''
 # accession constants
 
 imageMgiTypeKey = '9'	# Image
+gxdMgiTypeKey = '8'	# MGI Type for Image records
 mgiPrefix = "MGI:"	# Prefix for MGI accession ID
 accLogicalDBKey = '1'	# Logical DB Key for MGI accession ID
 accPrivate = '0'	# Private status for MGI accession ID (false)
@@ -144,7 +148,8 @@ pixPrefix = 'PIX:'	# Prefix for PIX
 pixLogicalDBKey = '19'	# Logical DB Key for PIX ID
 pixPrivate = '1'	# Private status for PIX ID (true)
 
-imageTypeKey = 1072158	# Full Size Image Type key
+FSimageTypeKey = 1072158	# Full Size Image Type key
+TNimageTypeKey = 1072159	# Thumbnail Image Type key
 
 # dictionaries to cache data for quicker lookup
 
@@ -189,6 +194,8 @@ def init():
     global diagFile, errorFile, inputFile, errorFileName, diagFileName
     global outImageFile, outCopyrightFile, outCaptionFile, outPaneFile, outAccFile
     global inImageFile, inPaneFile
+    global sqlFile
+    global createdByKey
  
     db.useOneConnection(1)
     db.set_sqlUser(user)
@@ -247,6 +254,11 @@ def init():
         outCopyrightFile = open(outCopyrightFileName, 'w')
     except:
         exit(1, 'Could not open file %s\n' % outCopyrightFileName)
+
+    try:
+        sqlFile = open(sqlFileName, 'w')
+    except:
+        exit(1, 'Could not open file %s\n' % sqlFileName)
 
     # Log all SQL
     db.set_sqlLogFunction(db.sqlLogAll)
@@ -327,8 +339,10 @@ def bcpFiles(
     bcp1 = '%s%s in %s %s' % (bcpI, imageTable, outImageFileName, bcpII)
     bcp2 = '%s%s in %s %s' % (bcpI, paneTable, outPaneFileName, bcpII)
     bcp3 = '%s%s in %s %s' % (bcpI, accTable, outAccFileName, bcpII)
+    bcp4 = 'cat %s | isql -S%s -D%s -U%s -i%s' \
+	% (passwordFileName, db.get_sqlServer(), db.get_sqlDatabase(), db.get_sqlUser(), sqlFileName)
 
-    for bcpCmd in [bcp1, bcp2, bcp3]:
+    for bcpCmd in [bcp1, bcp2, bcp3, bcp4]:
 	diagFile.write('%s\n' % bcpCmd)
 	os.system(bcpCmd)
 
@@ -365,12 +379,13 @@ def processImageFile():
 
         try:
 	    jnum = tokens[0]
-	    pixID = tokens[1]
-	    xdim = tokens[2]
-	    ydim = tokens[3]
-	    figureLabel = tokens[4]
-	    copyrightNote = tokens[5]
-	    imageNote = tokens[6]
+	    fullsizeKey = tokens[1]
+	    pixID = tokens[2]
+	    xdim = tokens[3]
+	    ydim = tokens[4]
+	    figureLabel = tokens[5]
+	    copyrightNote = tokens[6]
+	    imageNote = tokens[7]
         except:
             exit(1, 'Invalid Line (%d): %s\n' % (lineNum, line))
 
@@ -386,7 +401,15 @@ def processImageFile():
 
         # if no errors, process
 
+	if fullsizeKey != '':
+	    imageTypeKey = TNimageTypeKey
+	    updateFullSizeImage = 1
+        else:
+	    imageTypeKey = FSimageTypeKey
+	    updateFullSizeImage = 0
+
         outImageFile.write(str(imageKey) + TAB + \
+	    str(gxdMgiTypeKey) + TAB + \
 	    str(imageTypeKey) + TAB + \
 	    str(referenceKey) + TAB + \
 	    TAB + \
@@ -441,6 +464,12 @@ def processImageFile():
 
 	if len(imageNote) > 0:
             outCaptionFile.write(mgiAccID + TAB + imageNote + CRT)
+
+	# SQL file (for updates to Full Size Image)
+
+	if updateFullSizeImage:
+	    sqlFile.write('update IMG_Image set _ThumbnailImage_key = %s ' % (imageKey) + \
+		'where _Image_key = %s\ngo\n' % (fullsizeKey))
 
 	imagePix[pixID] = imageKey
         imageKey = imageKey + 1

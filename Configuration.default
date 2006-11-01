@@ -1,37 +1,44 @@
-#!/bin/csh
+#!/bin/sh
 
 #
 # Configuration.default
 #
-# Source this file from any csh script to set the
-# env variables
+# Source this file from any sh script to set the env variables
 #
 
-if ( ${?MGICONFIG} == 0 ) then
-	setenv MGICONFIG /usr/local/mgi/live/mgiconfig
-endif
+if [ "${MGICONFIG}" = "" ]
+then
+    MGICONFIG=/usr/local/mgi/live/mgiconfig
+    export MGICONFIG
+fi
 
-source ${MGICONFIG}/master.config.csh
+. ${MGICONFIG}/master.config.sh
 
 # data, log and report directories
-setenv COPYRIGHTFILE    ${DATADIR}/IMG_Copyright.in
-setenv CAPTIONFILE      ${DATADIR}/IMG_Caption.in
+COPYRIGHTFILE=${DATADIR}/IMG_Copyright.in
+CAPTIONFILE=${DATADIR}/IMG_Caption.in
+export COPYRIGHTFILE CAPTIONFILE
 
 # Pixel DB Data Directory
-setenv PIXELDBDATA	/data/pixeldb
+PIXELDBDATA=/data/pixeldb
+export PIXELDBDATA
 
 # Pixel DB Accession Counter
-setenv PIXELDBCOUNTER	${PIXELDBDATA}/accession/counter
+PIXELDBCOUNTER=${PIXELDBDATA}/accession/counter
+export PIXELDBCOUNTER
 
 # Load Mode
-setenv LOADMODE		load
-setenv NOTELOADMODE	incremental
+LOADMODE=load
+NOTELOADMODE=incremental
+export LOADMODE NOTELOADMODE
 
 # Created By
-setenv CREATEDBY	jfinger
+CREATEDBY=jfinger
+export CREATEDBY
 
-setenv COPYRIGHTNOTETYPE "Copyright"
-setenv CAPTIONNOTETYPE  "Caption"
-setenv OBJECTTYPE	Image
+COPYRIGHTNOTETYPE="Copyright"
+CAPTIONNOTETYPE="Caption"
+OBJECTTYPE=Image
+export COPYRIGHTNOTETYPE CAPTIONNOTETYPE OBJECTTYPE
 
 
