@@ -20,7 +20,7 @@ touch $LOG
 date | tee -a $LOG
  
 # load images into pixeldb
-#${GXDIMAGELOAD}/pixload.sh tr8002.config | tee -a ${LOG}
+${GXDIMAGELOAD}/pixload.sh tr8002.config | tee -a ${LOG}
 
 # generate the MGI-format image files
 ${GXDIMAGELOAD}/tr8002.py | tee -a $LOG
