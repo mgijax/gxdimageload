@@ -24,7 +24,9 @@
 #	image.txt
 #	imagepane.txt
 #	
-#       Error file
+#       1 error file:
+#
+#	image.error
 #
 # Exit Codes:
 #
@@ -58,8 +60,10 @@ inPixFileName = os.environ['PIXFILE']
 
 outImageFileName = datadir + '/image.txt'
 outPaneFileName = datadir + '/imagepane.txt'
-outImageFile = ''
-outPaneFile = ''
+outErrorFileName = datadir + '/image.error'
+outImageFile = None
+outPaneFile = None
+outErrorFile = None
 pixelDict = {}
 
 # constants
@@ -85,6 +89,7 @@ def exit(
 	inPixFile.close()
 	outImageFile.close()
 	outPaneFile.close()
+	outErrorFile.close()
 
     except:
 	pass
@@ -99,7 +104,7 @@ def exit(
 # Throws: nothing
 
 def init():
-    global inPixFile, outImageFile, outPaneFile, pixelDict
+    global inPixFile, outImageFile, outPaneFile, outErrorFile, pixelDict
  
     try:
         inPixFile = open(inPixFileName, 'r')
@@ -115,6 +120,11 @@ def init():
         outPaneFile = open(outPaneFileName, 'w')
     except:
         exit(1, 'Could not open file %s\n' % outPaneFileName)
+
+    try:
+        outErrorFile = open(outErrorFileName, 'w')
+    except:
+        exit(1, 'Could not open file %s\n' % outErrorFileName)
 
     pixelDict = assoclib.readPixelFile(inPixFile)
     inPixFile.close()
@@ -143,7 +153,7 @@ def process():
 	pixID = str(r['numericPart']) + '.jpg'
 
 	if not pixelDict.has_key(pixID):
-	    print 'Cannot Find Thumbnail Image (%d): %s\n' % (lineNum, pixID)
+	    outErrorFile.write('Cannot Find Thumbnail Image: %s\n' % (pixID))
 	    continue
 
 	# get x and y image dimensions
