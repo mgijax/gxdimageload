@@ -440,20 +440,21 @@ def processImageFile():
         accKey = accKey + 1
         mgiKey = mgiKey + 1
 
-	outAccFile.write(str(accKey) + TAB + \
-	    pixPrefix + str(pixID) + TAB + \
-	    pixPrefix + TAB + \
-	    str(pixID) + TAB + \
-	    pixLogicalDBKey + TAB + \
-	    str(imageKey) + TAB + \
-	    imageMgiTypeKey + TAB + \
-	    pixPrivate + TAB + \
-	    accPreferred + TAB + \
-	    str(createdByKey) + TAB + \
-	    str(createdByKey) + TAB + \
-	    loaddate + TAB + loaddate + CRT)
-
-        accKey = accKey + 1
+	if len(pixID) > 0:
+	    outAccFile.write(str(accKey) + TAB + \
+	        pixPrefix + str(pixID) + TAB + \
+	        pixPrefix + TAB + \
+	        str(pixID) + TAB + \
+	        pixLogicalDBKey + TAB + \
+	        str(imageKey) + TAB + \
+	        imageMgiTypeKey + TAB + \
+	        pixPrivate + TAB + \
+	        accPreferred + TAB + \
+	        str(createdByKey) + TAB + \
+	        str(createdByKey) + TAB + \
+	        loaddate + TAB + loaddate + CRT)
+    
+            accKey = accKey + 1
 
 	# Copyrights
 

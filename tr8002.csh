@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/csh
 
 #
 # TR 8002
@@ -11,9 +11,9 @@
 #	3. Load Assay/Image associations
 #
 
-. tr8002.config
+source ./tr8002.config
 
-LOG=`basename $0`.log
+setenv LOG	`basename $0`.log
 rm -rf $LOG
 touch $LOG
  
