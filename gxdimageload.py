@@ -330,8 +330,11 @@ def bcpFiles(
         return
 
     outImageFile.close()
+    outCopyrightFile.close()
+    outCaptionFile.close()
     outPaneFile.close()
     outAccFile.close()
+    sqlFile.close()
 
     bcpI = 'cat %s | bcp %s..' % (passwordFileName, db.get_sqlDatabase())
     bcpII = '-c -t\"%s' % (bcpdelim) + '" -S%s -U%s' % (db.get_sqlServer(), db.get_sqlUser())
