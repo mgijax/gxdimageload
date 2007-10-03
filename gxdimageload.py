@@ -79,15 +79,19 @@ import loadlib
 #
 # from configuration file
 #
-mode = os.environ['LOADMODE']
+mode = os.environ['IMAGELOADMODE']
 createdBy = os.environ['CREATEDBY']
 user = os.environ['MGD_DBUSER']
 passwordFileName = os.environ['MGD_DBPASSWORDFILE']
 
-datadir = os.environ['DATADIR']	# directory which contains the data files
-logdir = os.environ['LOGDIR']  # directory which contains the log files
+datadir = os.environ['IMAGELOADDATADIR']
 outCopyrightFileName = os.environ['COPYRIGHTFILE']
 outCaptionFileName = os.environ['CAPTIONFILE']
+
+inImageFileName = os.environ['IMAGEFILE']
+inPaneFileName = os.environ['IMAGEPANEFILE']
+
+outFileQualifier = os.environ['OUTFILE_QUALIFIER']
 
 DEBUG = 0		# if 0, not in debug mode
 TAB = '\t'		# tab
@@ -104,9 +108,6 @@ errorFile = ''		# error file descriptor
 inImageFile = ''         # file descriptor
 inPaneFile = ''          # file descriptor
 
-inImageFileName = datadir + '/image.txt'
-inPaneFileName = datadir + '/imagepane.txt'
-
 # output files
 
 outImageFile = ''	# file descriptor
@@ -120,10 +121,10 @@ imageTable = 'IMG_Image'
 paneTable = 'IMG_ImagePane'
 accTable = 'ACC_Accession'
 
-outImageFileName = datadir + '/' + imageTable + '.bcp'
-outPaneFileName = datadir + '/' + paneTable + '.bcp'
-outAccFileName = datadir + '/IMG_' + accTable + '.bcp'
-sqlFileName = datadir + '/' + imageTable + '.sql'
+outImageFileName = datadir + '/' + imageTable + '_' + outFileQualifier + '.bcp'
+outPaneFileName = datadir + '/' + paneTable + '_' + outFileQualifier + '.bcp'
+outAccFileName = datadir + '/' + accTable + '_' + outFileQualifier + '.bcp'
+sqlFileName = datadir + '/' + imageTable + '_' + outFileQualifier + '.sql'
 
 diagFileName = ''	# diagnostic file name
 errorFileName = ''	# error file name
@@ -201,10 +202,8 @@ def init():
     db.set_sqlUser(user)
     db.set_sqlPasswordFromFile(passwordFileName)
  
-    fdate = mgi_utils.date('%m%d%Y')	# current date
-    head, tail = os.path.split(sys.argv[0])
-    diagFileName = logdir + '/' + tail + '.' + fdate + '.diagnostics'
-    errorFileName = logdir + '/' + tail + '.' + fdate + '.error'
+    diagFileName = datadir + '/gxdimageload.diagnostics'
+    errorFileName = datadir + '/gxdimageload.error'
 
     try:
         diagFile = open(diagFileName, 'w')
