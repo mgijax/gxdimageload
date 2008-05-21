@@ -14,6 +14,9 @@ touch $LOG
  
 date | tee -a $LOG
  
+# create file of image files
+${GXDIMAGELOAD}/tr8985.py
+
 # process and load the MGI-format image files
 ${GXDIMAGELOAD}/gxdimageload.py | tee -a $LOG
 
