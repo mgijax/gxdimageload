@@ -30,8 +30,7 @@
 #
 #	Image Pane file, a tab-delimited file in the format:
 #		field 1: PIX ID (PIX:####)
-#		field 2: Field Type
-#		field 3: Pane Label
+#		field 2: Pane Label
 #
 # Outputs:
 #
