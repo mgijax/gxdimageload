@@ -71,6 +71,8 @@ passwordFile = os.environ['MGD_DBPASSWORDFILE']
 resultImageFile = os.environ['RESULT_IMAGE_FILE']
 jNumber = os.environ['REFERENCE']
 
+FULLSIZE_IMAGE_TYPE_KEY = 1072158
+
 assocTable = 'GXD_InSituResultImage'
 
 #
@@ -128,8 +130,9 @@ def buildPaneKeyLookup ():
     #
     results = db.sql('select i.figureLabel, ip._ImagePane_key ' + \
                      'from IMG_Image i, IMG_ImagePane ip ' + \
-                     'where i._Image_key = ip._Image_key and ' + \
-                           'i._Refs_key = ' + str(refKey), 'auto')
+                     'where i._Image_key = ip._Image_key ' + \
+			   'and i._ImageType_key = %d ' % (FULLSIZE_IMAGE_TYPE_KEY) + \
+                           'and i._Refs_key = ' + str(refKey), 'auto')
 
     for r in results:
         figureLabel = r['figureLabel']
