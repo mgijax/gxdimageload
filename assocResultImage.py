@@ -57,6 +57,7 @@ import string
 import re
 import db
 import mgi_utils
+import loadlib
 
 #
 #  CONSTANTS
@@ -110,19 +111,14 @@ def init ():
 # Throws: Nothing
 #
 def buildPaneKeyLookup ():
-    global paneKeyLookup
+    global paneKeyLookup, refKey
 
     paneKeyLookup = {}
 
     #
     # Get the reference key for the J-Number.
     #
-    results = db.sql('select _Object_key ' + \
-                     'from ACC_Accession ' + \
-                     'where accID = "' + jNumber + '" and ' + \
-                           '_LogicalDB_key = 1 and ' + \
-                           '_MGIType_key = 1', 'auto')
-    refKey = results[0]['_Object_key']
+    refKey = loadlib.verifyReference(jNumber, 0, None)
 
     #
     # Get all the figure labels and associated image pane keys for the
@@ -132,7 +128,7 @@ def buildPaneKeyLookup ():
                      'from IMG_Image i, IMG_ImagePane ip ' + \
                      'where i._Image_key = ip._Image_key ' + \
 			   'and i._ImageType_key = %d ' % (FULLSIZE_IMAGE_TYPE_KEY) + \
-                           'and i._Refs_key = ' + str(refKey), 'auto')
+                           'and i._Refs_key = %d' % (refKey), 'auto')
 
     for r in results:
         figureLabel = r['figureLabel']
@@ -238,6 +234,30 @@ def process ():
             print 'Missing pane key for figure label: ' + figureLabel
 
         line = fpResultImageFile.readline()
+
+    #
+    # need to update the hasImage bit in the expression cache
+    # the expression cache is created by the assayload
+    # but since the images are not attached until AFTER the assayload is run,
+    # the hasImage bit needs to be re-set to "1".
+    #
+
+    execSQL='''update GXD_Expression set hasImage = 1
+            from IMG_Image i, IMG_ImagePane p, 
+            GXD_Specimen s, GXD_InSituResult ir, GXD_InSituResultImage iri, GXD_Expression e
+            where i._MGIType_key = 8 
+            and i._ImageType_key = 1072158
+            and i.xDim is not null
+            and i._Image_key = p._Image_key
+            and p._ImagePane_key = iri._ImagePane_key
+            and iri._Result_key = ir._Result_key
+            and ir._Specimen_key = s._Specimen_key
+            and s._Assay_key = e._Assay_key
+            and e.hasImage = 0
+            and e._Refs_key = %s''' % (refsKey)
+
+    print execSQL
+    db.sql(execSQL, None)
 
     return 0
 
