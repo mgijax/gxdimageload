@@ -139,9 +139,6 @@ def process ():
 
 	lineNum = lineNum + 1
 
-	if lineNum == 1:
-	    continue
-
         tokens = string.split(line[:-1], '\t')
         filename =  tokens[0]
         (figureLabel, j) = string.split(filename, '.jpg')
