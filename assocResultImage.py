@@ -254,7 +254,7 @@ def process ():
             and ir._Specimen_key = s._Specimen_key
             and s._Assay_key = e._Assay_key
             and e.hasImage = 0
-            and e._Refs_key = %s''' % (refsKey)
+            and e._Refs_key = %s''' % (refKey)
 
     print execSQL
     db.sql(execSQL, None)
