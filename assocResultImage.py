@@ -47,6 +47,8 @@
 #  Date        SE   Change Description
 #  ----------  ---  -------------------------------------------------------
 #
+#  01/22/2009  LEC  add updateExpressionCache
+#
 #  09/19/2007  DBM  Initial development
 #
 ###########################################################################
@@ -54,7 +56,6 @@
 import sys
 import os
 import string
-import re
 import db
 import mgi_utils
 import loadlib
@@ -73,7 +74,8 @@ resultImageFile = os.environ['RESULT_IMAGE_FILE']
 jNumber = os.environ['REFERENCE']
 
 FULLSIZE_IMAGE_TYPE_KEY = 1072158
-
+refKey = ''
+paneKeyLookup = {}
 assocTable = 'GXD_InSituResultImage'
 
 #
@@ -113,8 +115,6 @@ def init ():
 def buildPaneKeyLookup ():
     global paneKeyLookup, refKey
 
-    paneKeyLookup = {}
-
     #
     # Get the reference key for the J-Number.
     #
@@ -124,11 +124,11 @@ def buildPaneKeyLookup ():
     # Get all the figure labels and associated image pane keys for the
     # reference.
     #
-    results = db.sql('select i.figureLabel, ip._ImagePane_key ' + \
-                     'from IMG_Image i, IMG_ImagePane ip ' + \
-                     'where i._Image_key = ip._Image_key ' + \
-			   'and i._ImageType_key = %d ' % (FULLSIZE_IMAGE_TYPE_KEY) + \
-                           'and i._Refs_key = %d' % (refKey), 'auto')
+    results = db.sql('''select i.figureLabel, ip._ImagePane_key
+                     from IMG_Image i, IMG_ImagePane ip
+                     where i._Image_key = ip._Image_key
+		     and i._ImageType_key = %d 
+                     and i._Refs_key = %d''' % (FULLSIZE_IMAGE_TYPE_KEY, refKey), 'auto')
 
     for r in results:
         figureLabel = r['figureLabel']
@@ -202,6 +202,42 @@ def runBCP ():
 
     return
 
+#
+# Purpose: Update the Expression cache hasImage bit
+# Returns: Nothing
+# Assumes: Nothing
+# Effects: Nothing
+# Throws: Nothing
+#
+def updateExpressionCache():
+
+    #
+    # NOTE:
+    # this must be done AFTER the data is loaded
+    # that is AFTER runBCP is completed
+    #
+    # need to update the hasImage bit in the expression cache
+    # the expression cache is created by the assayload
+    # but since the images are not attached until AFTER the assayload is run,
+    # the hasImage bit needs to be re-set to "1".
+    #
+
+    execSQL='''update GXD_Expression set hasImage = 1
+            from IMG_Image i, IMG_ImagePane p, 
+            GXD_Specimen s, GXD_InSituResult ir, GXD_InSituResultImage iri, GXD_Expression e
+            where i._MGIType_key = 8 
+            and i._ImageType_key = %d
+            and i.xDim is not null
+            and i._Image_key = p._Image_key
+            and p._ImagePane_key = iri._ImagePane_key
+            and iri._Result_key = ir._Result_key
+            and ir._Specimen_key = s._Specimen_key
+            and s._Assay_key = e._Assay_key
+            and e.hasImage = 0
+            and e._Refs_key = %d''' % (FULLSIZE_IMAGE_TYPE_KEY, refKey)
+
+    print execSQL
+    db.sql(execSQL, None)
 
 #
 # Purpose: Create the bcp file from the results/image data in the input file.
@@ -217,7 +253,7 @@ def process ():
     #
     line = fpResultImageFile.readline()
     while line:
-        tokens = re.split('\t', line[:-1])
+        tokens = string.split(line[:-1], '\t')
         resultKey = tokens[0]
         figureLabel = tokens[1]
 
@@ -235,30 +271,6 @@ def process ():
 
         line = fpResultImageFile.readline()
 
-    #
-    # need to update the hasImage bit in the expression cache
-    # the expression cache is created by the assayload
-    # but since the images are not attached until AFTER the assayload is run,
-    # the hasImage bit needs to be re-set to "1".
-    #
-
-    execSQL='''update GXD_Expression set hasImage = 1
-            from IMG_Image i, IMG_ImagePane p, 
-            GXD_Specimen s, GXD_InSituResult ir, GXD_InSituResultImage iri, GXD_Expression e
-            where i._MGIType_key = 8 
-            and i._ImageType_key = 1072158
-            and i.xDim is not null
-            and i._Image_key = p._Image_key
-            and p._ImagePane_key = iri._ImagePane_key
-            and iri._Result_key = ir._Result_key
-            and ir._Specimen_key = s._Specimen_key
-            and s._Assay_key = e._Assay_key
-            and e.hasImage = 0
-            and e._Refs_key = %s''' % (refKey)
-
-    print execSQL
-    db.sql(execSQL, None)
-
     return 0
 
 
@@ -271,5 +283,6 @@ openFiles()
 process()
 closeFiles()
 runBCP()
-
+updateExpressionCache()
 sys.exit(0)
+
