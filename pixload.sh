@@ -64,15 +64,18 @@
 #
 ACCID=`cat ${PIXELDBCOUNTER}`
 
-rm -f ${PIX_FULLSIZE} ${PIX_THUMBNAIL}
-touch ${PIX_FULLSIZE} ${PIX_THUMBNAIL}
+echo ${PIX_FULLSIZE}
+rm -f ${PIX_FULLSIZE}
+touch ${PIX_FULLSIZE}
+#rm -f ${PIX_THUMBNAIL}
+#touch ${PIX_THUMBNAIL}
 
 echo "Starting pix id: ${ACCID}"
 cd ${FULLSIZE_IMAGE_DIR}
 for FILE in `ls ${FULLSIZE_IMAGE_DIR}`
 do
     PIXELDBFILE=${PIXELDBDATA}/${ACCID}.jpg
-    cp ${FILE} ${PIXELDBFILE}
+#    cp ${FILE} ${PIXELDBFILE}
     echo "${FILE}	${ACCID}" >> ${PIX_FULLSIZE}
     LAST_ACCID=${ACCID}
     ACCID=`expr ${ACCID} + 1`
@@ -83,7 +86,7 @@ cd ${THUMBNAIL_IMAGE_DIR}
 for FILE in `ls ${THUMBNAIL_IMAGE_DIR}`
 do
     PIXELDBFILE=${PIXELDBDATA}/${ACCID}.jpg
-    cp ${FILE} ${PIXELDBFILE}
+#    cp ${FILE} ${PIXELDBFILE}
     echo "${FILE}	${ACCID}" >> ${PIX_THUMBNAIL}
     LAST_ACCID=${ACCID}
     ACCID=`expr ${ACCID} + 1`
@@ -93,5 +96,5 @@ echo "Ending pix id: ${LAST_ACCID}"
 # Advance the pixel DB counter to the next available accession number.
 #
 echo "Advance pixel DB counter to: ${ACCID}"
-echo ${ACCID} > ${PIXELDBCOUNTER}
+#echo ${ACCID} > ${PIXELDBCOUNTER}
 
