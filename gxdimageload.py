@@ -60,6 +60,15 @@
 #
 # History
 #
+# 05/18/2010	lec
+#	- TR10161/TRT10159/TR9485
+#	- The sqlFile code is setting the _Image_key = full size image type key
+#	  This is incorrect...it needs to use the full size image key (primary key)
+#         Instead of doing sql commands, this could be done by
+#         doing a mass update on the IMG_Image full size images
+#         based on reference and figureLabels.  See TR10221 as an example
+#	  of what I did to fix TR10161/TR10159/TR9485.
+#
 # 11/01/2006	lec
 #	- TR 8002; changes to support bulk loading of thumbnail images
 #	  and associations between thumbnails and pre-existing full size images.
