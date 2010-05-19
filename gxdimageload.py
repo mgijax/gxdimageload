@@ -43,8 +43,6 @@
 #	IMG_Copyright.in		input file for noteload
 #	IMG_Caption.in			input file for noteload
 #
-#	IMG_Image.sql			file of SQL updates
-#
 #       Diagnostics file of all input parameters and SQL commands
 #       Error file
 #
@@ -60,14 +58,11 @@
 #
 # History
 #
-# 05/18/2010	lec
-#	- TR10161/TRT10159/TR9485
-#	- The sqlFile code is setting the _Image_key = full size image type key
-#	  This is incorrect...it needs to use the full size image key (primary key)
-#         Instead of doing sql commands, this could be done by
-#         doing a mass update on the IMG_Image full size images
-#         based on reference and figureLabels.  See TR10221 data directory
-#	  as an example of what I did to fix these TRs.
+# 05/19/2010	lec
+#	- TR10220/updating the Thumbnail key for the Fullsize record
+#	- (see TR10161/TRT10159/TR9485 for examples)
+#	see bcpFiles...added db.sql() to update the IMG_Image._ThumbnailImage_key
+#	after the new fullsize/thumbnail images have been loaded.
 #
 # 11/01/2006	lec
 #	- TR 8002; changes to support bulk loading of thumbnail images
@@ -123,7 +118,6 @@ outCopyrightFile = ''	# file descriptor
 outCaptionFile = ''	# file descriptor
 outPaneFile = ''	# file descriptor
 outAccFile = ''         # file descriptor
-sqlFile = ''		# file descriptor
 
 imageTable = 'IMG_Image'
 paneTable = 'IMG_ImagePane'
@@ -132,7 +126,6 @@ accTable = 'ACC_Accession'
 outImageFileName = datadir + '/' + imageTable + '_' + outFileQualifier + '.bcp'
 outPaneFileName = datadir + '/' + paneTable + '_' + outFileQualifier + '.bcp'
 outAccFileName = datadir + '/' + accTable + '_' + outFileQualifier + '.bcp'
-sqlFileName = datadir + '/' + imageTable + '_' + outFileQualifier + '.sql'
 
 diagFileName = ''	# diagnostic file name
 errorFileName = ''	# error file name
@@ -203,7 +196,6 @@ def init():
     global diagFile, errorFile, inputFile, errorFileName, diagFileName
     global outImageFile, outCopyrightFile, outCaptionFile, outPaneFile, outAccFile
     global inImageFile, inPaneFile
-    global sqlFile
     global createdByKey
  
     db.useOneConnection(1)
@@ -261,11 +253,6 @@ def init():
         outCopyrightFile = open(outCopyrightFileName, 'w')
     except:
         exit(1, 'Could not open file %s\n' % outCopyrightFileName)
-
-    try:
-        sqlFile = open(sqlFileName, 'w')
-    except:
-        exit(1, 'Could not open file %s\n' % sqlFileName)
 
     # Log all SQL
     db.set_sqlLogFunction(db.sqlLogAll)
@@ -341,7 +328,6 @@ def bcpFiles(
     outCaptionFile.close()
     outPaneFile.close()
     outAccFile.close()
-    sqlFile.close()
 
     bcpI = 'cat %s | bcp %s..' % (passwordFileName, db.get_sqlDatabase())
     bcpII = '-c -t\"%s' % (bcpdelim) + '" -S%s -U%s' % (db.get_sqlServer(), db.get_sqlUser())
@@ -349,13 +335,35 @@ def bcpFiles(
     bcp1 = '%s%s in %s %s' % (bcpI, imageTable, outImageFileName, bcpII)
     bcp2 = '%s%s in %s %s' % (bcpI, paneTable, outPaneFileName, bcpII)
     bcp3 = '%s%s in %s %s' % (bcpI, accTable, outAccFileName, bcpII)
-    bcp4 = 'cat %s | isql -S%s -D%s -U%s -i%s' \
-	% (passwordFileName, db.get_sqlServer(), db.get_sqlDatabase(), db.get_sqlUser(), sqlFileName)
 
     for bcpCmd in [bcp1, bcp2, bcp3, bcp4]:
 	diagFile.write('%s\n' % bcpCmd)
 	os.system(bcpCmd)
 
+    # attach thumbnail image keys to fullsize images
+    # images are determined by reference
+    # the fullsize figureLabel = thumbnail figure label
+    # within a given reference
+
+    db.sql('''
+	select _Image_key, _Refs_key, figureLabel
+	into #thumbnail
+	from IMG_Image 
+	where _Refs_key = %s
+	and _ImageType_key = %s
+	''' (referenceKey, TNimageTypeKey), None)
+
+    db.sql('''
+	update IMG_Image
+	set _ThumbnailImage_key = t._Image_key
+	from IMG_Image i, #thumbnail t
+	where i._Refs_key = %s
+	and i._ImageType_key = %s
+	and i._ThumbnailImage_key is null
+	and i._Refs_key = t._Refs_key
+	and i.figureLabel = t.figureLabel
+	''' (referenceKey, FSimageTypeKey), None)
+	
     # update the max Accession ID value
     db.sql('exec ACC_setMax %d' % (recordsProcessed), None)
 
@@ -475,12 +483,6 @@ def processImageFile():
 
 	if len(imageNote) > 0:
             outCaptionFile.write(mgiAccID + TAB + imageNote + CRT)
-
-	# SQL file (for updates to Full Size Image)
-
-	if updateFullSizeImage:
-	    sqlFile.write('update IMG_Image set _ThumbnailImage_key = %s ' % (imageKey) + \
-		'where _Image_key = %s\ngo\n' % (fullsizeKey))
 
 	imagePix[pixID] = imageKey
         imageKey = imageKey + 1
