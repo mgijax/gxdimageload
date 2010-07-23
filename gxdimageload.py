@@ -320,6 +320,8 @@ def bcpFiles(
    recordsProcessed	# number of records processed (integer)
    ):
 
+    global referenceKey
+
     if DEBUG or not bcpon:
         return
 
@@ -336,7 +338,7 @@ def bcpFiles(
     bcp2 = '%s%s in %s %s' % (bcpI, paneTable, outPaneFileName, bcpII)
     bcp3 = '%s%s in %s %s' % (bcpI, accTable, outAccFileName, bcpII)
 
-    for bcpCmd in [bcp1, bcp2, bcp3, bcp4]:
+    for bcpCmd in [bcp1, bcp2, bcp3]:
 	diagFile.write('%s\n' % bcpCmd)
 	os.system(bcpCmd)
 
@@ -351,7 +353,7 @@ def bcpFiles(
 	from IMG_Image 
 	where _Refs_key = %s
 	and _ImageType_key = %s
-	''' (referenceKey, TNimageTypeKey), None)
+	''' % (referenceKey, TNimageTypeKey), None)
 
     db.sql('''
 	update IMG_Image
@@ -362,7 +364,7 @@ def bcpFiles(
 	and i._ThumbnailImage_key is null
 	and i._Refs_key = t._Refs_key
 	and i.figureLabel = t.figureLabel
-	''' (referenceKey, FSimageTypeKey), None)
+	''' % (referenceKey, FSimageTypeKey), None)
 	
     # update the max Accession ID value
     db.sql('exec ACC_setMax %d' % (recordsProcessed), None)
@@ -383,6 +385,7 @@ def processImageFile():
 
     global imageKey, accKey, mgiKey
     global imagePix
+    global referenceKey
 
     lineNum = 0
     # For each line in the input file
