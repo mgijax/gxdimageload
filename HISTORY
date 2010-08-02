@@ -1,3 +1,10 @@
+TAG: gxdimageload-4-3-5-1
+DATE: 08/02/2010
+STAFF: dbm
+CHANGES: 
+1) Added tr9695pixload.sh, tr9695prepFullsize.py, tr9695prepThumbnail.py
+   and tr9695imageAssoc.py to get the images loaded.
+
 TAG: gxdimageload-4-3-4-1
 DATE: 05/12/2010
 STAFF: lec
