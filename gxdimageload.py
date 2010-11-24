@@ -21,12 +21,13 @@
 #       Image file, a tab-delimited file in the format:
 #		field 1: Reference (J:####)
 #		field 2: Full Size Image Key (can be blank)
-#		field 3: PIX ID (PIX:#####)
-#		field 4: X Dimension
-#		field 5: Y Dimension
-#               field 6: Figure Label
-#               field 7: Copyright Note
-#               field 8: Image Note
+#		field 3: Image Class (_Vocab_key = 82)
+#		field 4: PIX ID (PIX:#####)
+#		field 5: X Dimension
+#		field 6: Y Dimension
+#               field 7: Figure Label
+#               field 8: Copyright Note
+#               field 9: Image Note
 #
 #	Image Pane file, a tab-delimited file in the format:
 #		field 1: PIX ID (PIX:####)
@@ -57,6 +58,9 @@
 # Implementation:
 #
 # History
+#
+# 11/24/2010	lec
+#	- TR10033/image class
 #
 # 05/19/2010	lec
 #	- TR10220/updating the Thumbnail key for the Fullsize record
@@ -141,6 +145,7 @@ createdByKey = ''
 # accession constants
 
 imageMgiTypeKey = '9'	# Image
+imageVocabClassKey = '82'	# Image Class Vocabulary
 gxdMgiTypeKey = '8'	# MGI Type for Image records
 mgiPrefix = "MGI:"	# Prefix for MGI accession ID
 accLogicalDBKey = '1'	# Logical DB Key for MGI accession ID
@@ -401,17 +406,22 @@ def processImageFile():
         try:
 	    jnum = tokens[0]
 	    fullsizeKey = tokens[1]
-	    pixID = tokens[2]
-	    xdim = tokens[3]
-	    ydim = tokens[4]
-	    figureLabel = tokens[5]
-	    copyrightNote = tokens[6]
-	    imageNote = tokens[7]
+	    imageClass = tokens[2]
+	    pixID = tokens[3]
+	    xdim = tokens[4]
+	    ydim = tokens[5]
+	    figureLabel = tokens[6]
+	    copyrightNote = tokens[7]
+	    imageNote = tokens[8]
         except:
             exit(1, 'Invalid Line (%d): %s\n' % (lineNum, line))
 
-        referenceKey = loadlib.verifyReference(jnum, lineNum, errorFile)
+        imageClassKey = loadlib.verifyTerm('', imageVocabClassKey, imageClass, lineNum, errorFile)
+        if imageClassKey == 0:
+            # set error flag to true
+            error = 1
 
+        referenceKey = loadlib.verifyReference(jnum, lineNum, errorFile)
         if referenceKey == 0:
             # set error flag to true
             error = 1
@@ -431,6 +441,7 @@ def processImageFile():
 
         outImageFile.write(str(imageKey) + TAB + \
 	    str(gxdMgiTypeKey) + TAB + \
+	    str(imageClassKey) + TAB + \
 	    str(imageTypeKey) + TAB + \
 	    str(referenceKey) + TAB + \
 	    TAB + \
