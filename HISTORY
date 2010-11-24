@@ -1,3 +1,9 @@
+TAG: gxdimageload-4-4-1-1
+DATE: 11/24/2010
+STAFF: lec
+CHANGES: 
+1) gxdimageload.py; added image class key to IMG_Image
+
 TAG: gxdimageload-4-3-5-1
 DATE: 08/02/2010
 STAFF: dbm
