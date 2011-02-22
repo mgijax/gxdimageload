@@ -21,7 +21,7 @@
 #       Image file, a tab-delimited file in the format:
 #		field 1: Reference (J:####)
 #		field 2: Full Size Image Key (can be blank)
-#		field 3: Image Class (_Vocab_key = 82)
+#		field 3: Image Class (_Vocab_key = 83)
 #		field 4: PIX ID (PIX:#####)
 #		field 5: X Dimension
 #		field 6: Y Dimension
@@ -145,7 +145,7 @@ createdByKey = ''
 # accession constants
 
 imageMgiTypeKey = '9'	# Image
-imageVocabClassKey = '82'	# Image Class Vocabulary
+imageVocabClassKey = '83'	# Image Class Vocabulary
 gxdMgiTypeKey = '8'	# MGI Type for Image records
 mgiPrefix = "MGI:"	# Prefix for MGI accession ID
 accLogicalDBKey = '1'	# Logical DB Key for MGI accession ID
