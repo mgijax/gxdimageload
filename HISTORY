@@ -1,3 +1,11 @@
+TAG: gxdimageload-4-4-1-2
+DATE: 02/22/2011
+STAFF: dbm
+CHANGES: 
+1) gxdimageload.py: changed image class key to 83
+2) Added tr10537pixload.sh, tr10537prepFullsize.py, tr10537prepThumbnail.py
+   and tr10537imageAssoc.py to get the images loaded.
+
 TAG: gxdimageload-4-4-1-1
 DATE: 11/24/2010
 STAFF: lec
