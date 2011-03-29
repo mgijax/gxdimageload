@@ -190,11 +190,16 @@ def process ():
     # Get all the figure labels and image keys for each fullsize image
     # that has been loaded for the reference.
     #
+    # NOTE: There was an additional set of images added after the initial
+    #       batch, so the last condition to the "where" clause was added
+    #       to this query to exclude the original batch.
+    #
     results = db.sql('select figureLabel, _Image_key ' + \
                      'from IMG_Image ' + \
                      'where figureLabel like "g%" and ' + \
                            '_Refs_key = ' + str(refKey) + ' and ' + \
-                           '_ImageType_key = ' + str(FULLSIZE_IMAGE_TYPE_KEY),
+                           '_ImageType_key = ' + str(FULLSIZE_IMAGE_TYPE_KEY) + ' and ' + \
+                           'creation_date > "2/24/2011"',
                      'auto')
 
     #
