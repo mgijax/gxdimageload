@@ -1,3 +1,10 @@
+TAG: gxdimageload-4-4-1-3
+DATE: 03/29/2011
+STAFF: dbm
+CHANGES: 
+1) tr10537imageAssoc.py: check creation_date on query that gets the images
+   to exclude the original set of images that were loaded
+
 TAG: gxdimageload-4-4-1-2
 DATE: 02/22/2011
 STAFF: dbm
