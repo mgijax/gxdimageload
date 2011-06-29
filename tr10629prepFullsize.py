@@ -195,8 +195,11 @@ def process ():
 	#
 	if filename in imageLookup:
 	  figureLabel = imageLookup[filename][0][0]
-	  #[0:-4]
+	  figureLabel = figureLabel.replace('.jpg', '')
 	  CAPTION = imageLookup[filename][0][1]
+	else:
+	  print figureLabel
+	  continue
 
         #
         # Get the X an Y dimensions of the image file in pixel DB.
