@@ -17,8 +17,8 @@
 #
 #      PIXELDB_FILES
 #      PIXELDBDATA
-#      PIX_FULLSIZE
-#      IMAGE_FULLSIZE
+#      PIX_THUMBNAIL
+#      IMAGE_THUMBNAIL
 #      IMAGEPANE_FULLSIZE
 #      REFERENCE
 #
@@ -74,19 +74,19 @@ import jpeginfo
 #  CONSTANTS
 #
 CAPTION = ''
-COPYRIGHT = '''Questions regarding this image should be directed to the GUDMAP project: gudmap-editors@gudmap.org.  Information about its use in publications can be found at http://www.gudmap.org/About/Usage.html.'''
+COPYRIGHT = '''Questions regarding this image should be directed to the GUDMAP project: qudmap-editors@gudmap.org.  Information about its use in publications can be found at http://www.gudmap.org/About/Usage.html.'''
 
-FULLSIZE_IMAGE_KEY = ''
+FULLSIZE_IMAGE_KEY = '1072158'
 IMAGECLASS = 'Expression'
 
 #
 #  GLOBALS
 #
 pixelDBDir = os.environ['PIXELDBDATA']
-pixFile = os.environ['PIX_FULLSIZE']
+pixFile = os.environ['PIX_THUMBNAIL']
 imageLoad = os.environ['PIXELDB_FILES']
-imageFile = os.environ['IMAGE_FULLSIZE']
-imagePaneFile = os.environ['IMAGEPANE_FULLSIZE']
+imageFile = os.environ['IMAGE_THUMBNAIL']
+imagePaneFile = os.environ['IMAGEPANE_THUMBNAIL']
 jNumber = os.environ['REFERENCE']
 
 imageLookup = {}
