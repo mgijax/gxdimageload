@@ -175,7 +175,7 @@ def process ():
         #
         # The figure label is used for the acc ID (e.g. "GUDMAP:10").
         #
-        accID = figureLabel.replace('GUDMAP:', '')
+        accID = figureLabel;
         prefixPart = ''
         numericPart = accID
 
