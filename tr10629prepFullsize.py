@@ -140,7 +140,8 @@ def openFiles ():
         tokens = string.split(line[:-1], '\t')
 	key = tokens[2]
 	value = tokens
-	imageLookup[key] = []
+	if not imageLookup.has_key(key):
+	    imageLookup[key] = []
 	imageLookup[key].append(value)
         line = fpImageLoadFile.readline()
     fpImageLoadFile.close()
@@ -173,6 +174,8 @@ def closeFiles ():
 #
 def process ():
 
+    figureLabel = None
+
     #
     # Process each line of the input file.
     #
@@ -194,29 +197,35 @@ def process ():
         # the ".jpg" suffix.
 	#
 	if filename in imageLookup:
-	  figureLabel = imageLookup[filename][0][0]
-	  figureLabel = figureLabel.replace('.jpg', '')
-	  CAPTION = imageLookup[filename][0][1]
+
+	  for x in imageLookup[filename]:
+
+	    #figureLabel = imageLookup[filename][0][0]
+	    figureLabel = x[0]
+	    figureLabel = figureLabel.replace('.jpg', '')
+	    #CAPTION = imageLookup[filename][0][1]
+	    CAPTION = x[1]
+
+            #
+            # Get the X an Y dimensions of the image file in pixel DB.
+            #
+            (xdim, ydim) = jpeginfo.getDimensions(pixelDBDir + '/' + pixID + '.jpg')
+
+            fpImageFile.write(jNumber + '\t' +
+                              FULLSIZE_IMAGE_KEY + '\t' +
+			      IMAGECLASS + '\t' +
+                              pixID + '\t' +
+                              str(xdim) + '\t' +
+                              str(ydim) + '\t' +
+                              figureLabel + '\t' +
+                              COPYRIGHT + '\t' +
+                              CAPTION + '\n')
+
+            fpImagePaneFile.write(pixID + '\t' + '\n')
+
 	else:
-	  print figureLabel
+	  #print figureLabel
 	  continue
-
-        #
-        # Get the X an Y dimensions of the image file in pixel DB.
-        #
-        (xdim, ydim) = jpeginfo.getDimensions(pixelDBDir + '/' + pixID + '.jpg')
-
-        fpImageFile.write(jNumber + '\t' +
-                          FULLSIZE_IMAGE_KEY + '\t' +
-			  IMAGECLASS + '\t' +
-                          pixID + '\t' +
-                          str(xdim) + '\t' +
-                          str(ydim) + '\t' +
-                          figureLabel + '\t' +
-                          COPYRIGHT + '\t' +
-                          CAPTION + '\n')
-
-        fpImagePaneFile.write(pixID + '\t' + '\n')
 
         line = fpPixFile.readline()
 
