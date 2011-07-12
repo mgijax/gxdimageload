@@ -41,6 +41,7 @@
 
 import sys
 import os
+import string
 import db
 import mgi_utils
 import loadlib
@@ -176,8 +177,8 @@ def process ():
         # The figure label is used for the acc ID (e.g. "GUDMAP:10").
         #
         accID = figureLabel;
-        prefixPart = ''
-        numericPart = accID
+	prefixPart, numericPart = string.split(accID, ':')
+        prefixPart = prefixPart + ':'
 
         fpImageAccFile.write(str(accKey) + '\t' +
                              accID + '\t' +
