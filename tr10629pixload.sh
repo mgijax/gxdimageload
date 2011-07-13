@@ -124,4 +124,4 @@ echo "Ending pix id: ${LAST_ACCID}"
 # Advance the pixel DB counter to the next available accession number.
 #
 echo "Advance pixel DB counter to: ${ACCID}"
-${ACCID} > ${PIXELDBCOUNTER}
+echo ${ACCID} > ${PIXELDBCOUNTER}
