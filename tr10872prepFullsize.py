@@ -1,19 +1,16 @@
 #!/usr/local/bin/python
 
 #
-# Program: tr9458fullsize.py
+# Program: tr10872.py
 #
 # Original Author: Lori Corbani
 #
 # Purpose:
 #
 #	To create input files for the gxdimageload.py program.
-#	from full-size of TR9471.
+#	from full-size of TR10872.
 #
 # Input:
-#
-#       J141291stubs.txt, tab-delimited file in the format:
-#               field 1: file name
 #
 #	PIX_FULLSIZE, tab-delimited list of full size
 #		field 1: file name
@@ -50,18 +47,18 @@ import assoclib
 #
 FIRST_IMAGE_FILE_INDEX = 9
 
-CAPTION = '''This image was provided by the authors as a direct GXD submission. Questions regarding this image or its use in publications should be directed to Dr. Heiko Lickert at E-mail: heiko.lickert@helmholtz-muenchen.de.'''
-
-COPYRIGHT = '''This image is from Tamplin OJ, BMC Genomics 2008;9(1):511, an open-access article, licensee BioMed Central Ltd.'''
+COPYRIGHT = '''Questions regarding this image or its use in publications should be directed to J. Rossant at E-mail: janet.rossant@sickkids.ca.'''
 
 FULLSIZE_IMAGE_KEY = ''
+
+IMAGE_CLASS = 'Expression'
 
 #
 #  GLOBALS
 #
 pixelDBDir = os.environ['PIXELDBDATA']
 pixFile = os.environ['PIX_FULLSIZE']
-imageListFile = os.environ['IMAGE_LIST_FIG_FILE']
+imageListFile = os.environ['PIXELDB_FILES']
 imageFile = os.environ['IMAGE_FULLSIZE']
 imagePaneFile = os.environ['IMAGEPANE_FULLSIZE']
 jNumber = os.environ['REFERENCE']
@@ -146,8 +143,10 @@ def process ():
 	lineNum = lineNum + 1
 
         tokens = string.split(line[:-1], '\t')
-        filename =  tokens[0]
-        (figureLabel, j) = string.split(filename, '.jpg')
+        filename = tokens[1] + '.jpg'
+	figureLabel = tokens[1]
+	copyright = tokens[2]
+	imageNote = tokens[3]
 
 	if not pixelDict.has_key(filename):
         	print 'Cannot find filename: ' + filename + '\n'
@@ -162,12 +161,13 @@ def process ():
 
         fpImageFile.write(jNumber + '\t' +
                           FULLSIZE_IMAGE_KEY + '\t' +
+			  IMAGE_CLASS + '\t' +
                           pixID + '\t' +
                           str(xdim) + '\t' +
                           str(ydim) + '\t' +
                           figureLabel + '\t' +
                           COPYRIGHT + '\t' +
-                          CAPTION + '\n')
+                          imageNote + '\n')
 
         fpImagePaneFile.write(pixID + '\t' + '\n')
 

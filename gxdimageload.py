@@ -531,6 +531,9 @@ def processImagePaneFile():
         except:
             exit(1, 'Invalid Line (%d): %s\n' % (lineNum, line))
 
+	#print str(paneKey)
+	#print str(imagePix[pixID])
+
         outPaneFile.write(str(paneKey) + TAB + \
 	    str(imagePix[pixID]) + TAB + \
 	    mgi_utils.prvalue(paneLabel) + TAB + \
