@@ -1,4 +1,4 @@
-#!/bin/csh
+#!/bin/csh -f
 
 cd `dirname $0` && source ./tr7167.config
 
