@@ -1,3 +1,9 @@
+TAG: gxdimageload-4-4-2-3
+DATE: 02/13/2012
+STAFF: lec
+CHANGES: 
+1) TR10978/added x,y,width,height to IMG_ImagePane
+
 TAG: gxdimageload-4-4-2-2
 DATE: 11/22/2011
 STAFF: lec
