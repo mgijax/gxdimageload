@@ -59,6 +59,9 @@
 #
 # History
 #
+# 02/13/2012	lec
+#	- TR10978/add x,y,width,heigth
+#
 # 11/24/2010	lec
 #	- TR10033/image class
 #
@@ -537,6 +540,7 @@ def processImagePaneFile():
         outPaneFile.write(str(paneKey) + TAB + \
 	    str(imagePix[pixID]) + TAB + \
 	    mgi_utils.prvalue(paneLabel) + TAB + \
+	    TAB + TAB + TAB + TAB + \
 	    loaddate + TAB + loaddate + CRT)
 
         paneKey = paneKey + 1
