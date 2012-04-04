@@ -96,6 +96,7 @@
 import sys
 import os
 import jpeginfo
+import db
 
 #
 #  CONSTANTS
@@ -106,7 +107,7 @@ CAPTION = ''
 COPYRIGHT = ''
 
 FULLSIZE_IMAGE_TYPE_KEY = 1072158
-IMAGE_CLASS = '83'
+IMAGE_CLASS = 'Expression'
 
 #
 #  GLOBALS
@@ -117,7 +118,6 @@ imageListFile = os.environ['STR_PATT_FILE']
 imageFile = os.environ['IMAGE_THUMBNAIL']
 imagePaneFile = os.environ['IMAGEPANE_THUMBNAIL']
 jNumber = os.environ['REFERENCE']
-
 
 #
 # Purpose: Create a dictionary for looking up the pix ID for an image file
@@ -246,6 +246,8 @@ def closeFiles ():
 #
 def process ():
 
+    imageLookup = []
+
     #
     # Search through each line of the image list file.
     #
@@ -267,6 +269,13 @@ def process ():
             # If there is no image file, advance the index to the next one.
             #
             if filename == '':
+                i += 6
+                continue
+
+            #
+            #  If this image has already be used, skip
+            #
+            if filename in imageLookup:
                 i += 6
                 continue
 
@@ -305,8 +314,10 @@ def process ():
                 fpImagePaneFile.write(pixID + '\t' + '\n')
 
             #
+            # Add filename to imageLookup
             # Advance the index to the next image file.
             #
+            imageLookup.append(filename)
             i += 6
 
         line = fpImageList.readline()
@@ -318,6 +329,7 @@ def process ():
 # Main
 #
 buildPixIDLookup()
+buildImageKeyLookup()
 openFiles()
 process()
 closeFiles()
