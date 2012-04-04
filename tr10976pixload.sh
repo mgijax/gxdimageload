@@ -92,8 +92,8 @@ do
         PIXELDBFILE=${PIXELDBDATA}/${ACCID}.jpg
         #cp ${FULLSIZE_IMAGE_DIR}/${FILENAME} ${PIXELDBFILE}
         echo "${FILENAME}	${ACCID}" >> ${PIX_FULLSIZE}
-        #LAST_ACCID=${ACCID}
-        #ACCID=`expr ${ACCID} + 1`
+        LAST_ACCID=${ACCID}
+        ACCID=`expr ${ACCID} + 1`
     else
         echo "${FULLSIZE_IMAGE_DIR}/${FILENAME}" >> ${PIX_MISSING}
     fi
@@ -109,8 +109,8 @@ do
         PIXELDBFILE=${PIXELDBDATA}/${ACCID}.jpg
         #cp ${THUMBNAIL_IMAGE_DIR}/${FILENAME} ${PIXELDBFILE}
         echo "${FILENAME}	${ACCID}" >> ${PIX_THUMBNAIL}
-        #LAST_ACCID=${ACCID}
-        #ACCID=`expr ${ACCID} + 1`
+        LAST_ACCID=${ACCID}
+        ACCID=`expr ${ACCID} + 1`
     else
         echo "${THUMBNAIL_IMAGE_DIR}/${FILENAME}" >> ${PIX_MISSING}
     fi
