@@ -541,16 +541,16 @@ def processImagePaneFile():
 	#print str(paneKey)
 	#print str(imagePix[pixID])
 
-	paneX = '0'
-	paneY = '0'
+	paneX = 0
+	paneY = 0
 
         outPaneFile.write(str(paneKey) + TAB + \
 	    str(imagePix[pixID]) + TAB + \
 	    mgi_utils.prvalue(paneLabel) + TAB + \
-	    paneX + TAB + \
-	    paneY + TAB + \
-	    paneWidth + TAB + \
-	    paneHeight + TAB + \
+	    str(paneX) + TAB + \
+	    str(paneY) + TAB + \
+	    str(paneWidth) + TAB + \
+	    str(paneHeight) + TAB + \
 	    loaddate + TAB + loaddate + CRT)
 
         paneKey = paneKey + 1

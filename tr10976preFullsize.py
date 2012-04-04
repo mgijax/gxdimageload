@@ -68,12 +68,13 @@
 #
 #          1) Reference (J:122989)
 #          2) Fullsize image key (blank)
-#          3) Pixel DB accession number (numeric part)
-#          4) X dimension of the image
-#          5) Y dimension of the image
-#          6) Figure label
-#          7) Copyright note
-#          8) Caption note
+#	   3) Image Class (_Vocab_key = 83)
+#          4) Pixel DB accession number (numeric part)
+#          5) X dimension of the image
+#          6) Y dimension of the image
+#          7) Figure label
+#          8) Copyright note
+#          9) Caption note
 #
 #      imagepane_Fullsize.txt - Tab-delimited fields:
 #
@@ -107,6 +108,7 @@ CAPTION = '''This image was constributed directly to GXD by the GenePaint databa
 COPYRIGHT = '''Questions regarding this image or its use in publications should be directed to gpscience@mpibpc.mpg.de'''
 
 FULLSIZE_IMAGE_KEY = ''
+IMAGE_CLASS = 'Expression'
 
 #
 #  GLOBALS
@@ -270,6 +272,7 @@ def process ():
 
                 fpImageFile.write(jNumber + '\t' +
                                   FULLSIZE_IMAGE_KEY + '\t' +
+				  IMAGE_CLASS + '\t' +
                                   pixID + '\t' +
                                   str(xdim) + '\t' +
                                   str(ydim) + '\t' +
@@ -277,7 +280,7 @@ def process ():
                                   COPYRIGHT + '\t' +
                                   CAPTION + '\n')
 
-                fpImagePaneFile.write(pixID + '\t' + '\n')
+                fpImagePaneFile.write(pixID + '\t\t' + str(xdim) + '\t' + str(ydim) + '\n')
 
             #
 	    # Add filename to imageLookup

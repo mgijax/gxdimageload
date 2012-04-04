@@ -106,6 +106,7 @@ CAPTION = ''
 COPYRIGHT = ''
 
 FULLSIZE_IMAGE_TYPE_KEY = 1072158
+IMAGE_CLASS = '83'
 
 #
 #  GLOBALS
@@ -293,6 +294,7 @@ def process ():
 
                 fpImageFile.write(jNumber + '\t' +
                                   str(imageKey) + '\t' +
+				  IMAGE_CLASS + '\t' +
                                   pixID + '\t' +
                                   str(xdim) + '\t' +
                                   str(ydim) + '\t' +
