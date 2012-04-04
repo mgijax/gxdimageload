@@ -32,6 +32,8 @@
 #	Image Pane file, a tab-delimited file in the format:
 #		field 1: PIX ID (PIX:####)
 #		field 2: Pane Label
+#		field 3: X Dimension (width)
+#		field 4: Y Dimension (heigth)
 #
 # Outputs:
 #
@@ -531,16 +533,24 @@ def processImagePaneFile():
         try:
 	    pixID = tokens[0]
 	    paneLabel = tokens[1]
+	    paneWidth = tokens[2]
+	    paneHeight = tokens[3]
         except:
             exit(1, 'Invalid Line (%d): %s\n' % (lineNum, line))
 
 	#print str(paneKey)
 	#print str(imagePix[pixID])
 
+	paneX = '0'
+	paneY = '0'
+
         outPaneFile.write(str(paneKey) + TAB + \
 	    str(imagePix[pixID]) + TAB + \
 	    mgi_utils.prvalue(paneLabel) + TAB + \
-	    TAB + TAB + TAB + TAB + \
+	    paneX + TAB + \
+	    paneY + TAB + \
+	    paneWidth + TAB + \
+	    paneHeight + TAB + \
 	    loaddate + TAB + loaddate + CRT)
 
         paneKey = paneKey + 1
