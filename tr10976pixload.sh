@@ -90,7 +90,7 @@ do
     if [ -f ${FULLSIZE_IMAGE_DIR}/${FILENAME} ]
     then
         PIXELDBFILE=${PIXELDBDATA}/${ACCID}.jpg
-        #cp ${FULLSIZE_IMAGE_DIR}/${FILENAME} ${PIXELDBFILE}
+        cp ${FULLSIZE_IMAGE_DIR}/${FILENAME} ${PIXELDBFILE}
         echo "${FILENAME}	${ACCID}" >> ${PIX_FULLSIZE}
         LAST_ACCID=${ACCID}
         ACCID=`expr ${ACCID} + 1`
@@ -107,7 +107,7 @@ do
     if [ -f ${THUMBNAIL_IMAGE_DIR}/${FILENAME} ]
     then
         PIXELDBFILE=${PIXELDBDATA}/${ACCID}.jpg
-        #cp ${THUMBNAIL_IMAGE_DIR}/${FILENAME} ${PIXELDBFILE}
+        cp ${THUMBNAIL_IMAGE_DIR}/${FILENAME} ${PIXELDBFILE}
         echo "${FILENAME}	${ACCID}" >> ${PIX_THUMBNAIL}
         LAST_ACCID=${ACCID}
         ACCID=`expr ${ACCID} + 1`
@@ -119,5 +119,5 @@ echo "Ending pix id: ${LAST_ACCID}"
 
 # Advance the pixel DB counter to the next available accession number.
 #
-#echo "Advance pixel DB counter to: ${ACCID}"
-#echo ${ACCID} > ${PIXELDBCOUNTER}
+echo "Advance pixel DB counter to: ${ACCID}"
+echo ${ACCID} > ${PIXELDBCOUNTER}
