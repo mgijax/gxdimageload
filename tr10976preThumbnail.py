@@ -97,6 +97,7 @@ import sys
 import os
 import jpeginfo
 import db
+import loadlib
 
 #
 #  CONSTANTS
@@ -166,17 +167,14 @@ def buildPixIDLookup ():
 def buildImageKeyLookup ():
     global imageKeyLookup
 
-    results = db.sql('select _Object_key ' + \
-                     'from ACC_Accession ' + \
-                     'where accID = "%s" and ' % (jNumber) + \
-                           '_LogicalDB_key = 1 and ' + \
-                           '_MGIType_key = 1', 'auto')
-    referenceKey = results[0]['_Object_key']
+    referenceKey = loadlib.verifyReference(jNumber, 0, None)
 
-    results = db.sql('select _Image_key, figureLabel ' + \
-                     'from IMG_Image ' + \
-                     'where _Refs_key = %d and ' % (referenceKey) + \
-                           '_ImageType_key = %d' % (FULLSIZE_IMAGE_TYPE_KEY), 'auto')
+    results = db.sql('''
+	select _Image_key, figureLabel
+        from IMG_Image
+        where _Refs_key = %d
+        and _ImageType_key = %d
+	''' % (referenceKey, FULLSIZE_IMAGE_TYPE_KEY), 'auto')
 
     imageKeyLookup = {}
     for r in results:
@@ -246,7 +244,7 @@ def closeFiles ():
 #
 def process ():
 
-    imageLookup = []
+    imageUsed = []
 
     #
     # Search through each line of the image list file.
@@ -275,7 +273,7 @@ def process ():
             #
             #  If this image has already be used, skip
             #
-            if filename in imageLookup:
+            if filename in imageUsed:
                 i += 6
                 continue
 
@@ -314,10 +312,10 @@ def process ():
                 fpImagePaneFile.write(pixID + '\t\t\t\t\n')
 
             #
-            # Add filename to imageLookup
+            # Add filename to imageUsed
             # Advance the index to the next image file.
             #
-            imageLookup.append(filename)
+            imageUsed.append(filename)
             i += 6
 
         line = fpImageList.readline()

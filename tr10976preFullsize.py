@@ -221,7 +221,7 @@ def closeFiles ():
 #
 def process ():
 
-    imageLookup = []
+    imageUsed = []
 
     #
     # Search through each line of the image list file.
@@ -250,7 +250,7 @@ def process ():
 	    #
 	    #  If this image has already be used, skip
 	    #
-	    if filename in imageLookup:
+	    if filename in imageUsed:
                 i += 6
                 continue
 
@@ -299,10 +299,10 @@ def process ():
                 fpImagePaneFile.write(pixID + '\t\t' + str(xdim) + '\t' + str(ydim) + '\n')
 
             #
-	    # Add filename to imageLookup
+	    # Add filename to imageUsed
             # Advance the index to the next image file.
             #
-	    imageLookup.append(filename)
+	    imageUsed.append(filename)
             i += 6
 
         line = fpImageList.readline()
