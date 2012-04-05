@@ -498,7 +498,7 @@ def processImageFile():
 
 	if len(imageInfo) > 0:
 
-	    imageLogicalDBKey, imageID = imageInfo[:-1].split('|')
+	    imageLogicalDBKey, imageID = imageInfo.split('|')
 
 	    outAccFile.write(str(accKey) + TAB + \
 	        imageID + TAB + \
