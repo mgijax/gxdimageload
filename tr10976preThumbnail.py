@@ -307,7 +307,7 @@ def process ():
                                   str(ydim) + '\t' +
                                   figureLabel + '\t' +
                                   COPYRIGHT + '\t' +
-                                  CAPTION + '\n')
+                                  CAPTION + '\t\n')
 
                 fpImagePaneFile.write(pixID + '\t\t\t\t\n')
 
