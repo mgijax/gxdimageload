@@ -311,7 +311,7 @@ def process ():
                                   COPYRIGHT + '\t' +
                                   CAPTION + '\n')
 
-                fpImagePaneFile.write(pixID + '\t' + '\n')
+                fpImagePaneFile.write(pixID + '\t\t\t\t\n')
 
             #
             # Add filename to imageLookup

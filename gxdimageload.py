@@ -28,6 +28,9 @@
 #               field 7: Figure Label
 #               field 8: Copyright Note
 #               field 9: Image Note
+#		field 10: LogicalDB|Image AccID (optional)
+#			where LogicalDB is the ldb of the URL to which to attach the accID
+#			where Image AccID is accID
 #
 #	Image Pane file, a tab-delimited file in the format:
 #		field 1: PIX ID (PIX:####)
@@ -41,7 +44,7 @@
 #
 #       IMG_Image.bcp			master Image records
 #	IMG_ImagePane.bcp		Image Pane records
-#       IMG_ACC_Accession.bcp           Accession records
+#	ACC_Accession.bcp (fullsize, thumbnail, images)
 #
 #	IMG_Copyright.in		input file for noteload
 #	IMG_Caption.in			input file for noteload
@@ -417,6 +420,7 @@ def processImageFile():
 	    figureLabel = tokens[6]
 	    copyrightNote = tokens[7]
 	    imageNote = tokens[8]
+	    imageInfo = tokens[9]
         except:
             exit(1, 'Invalid Line (%d): %s\n' % (lineNum, line))
 
@@ -485,6 +489,25 @@ def processImageFile():
 	        str(imageKey) + TAB + \
 	        imageMgiTypeKey + TAB + \
 	        pixPrivate + TAB + \
+	        accPreferred + TAB + \
+	        str(createdByKey) + TAB + \
+	        str(createdByKey) + TAB + \
+	        loaddate + TAB + loaddate + CRT)
+    
+            accKey = accKey + 1
+
+	if len(imageInfo) > 0:
+
+	    imageLogicalDBKey, imageID = imageInfo[:-1].split('|')
+
+	    outAccFile.write(str(accKey) + TAB + \
+	        imageID + TAB + \
+	        imageID + TAB + \
+	        TAB + \
+	        imageLogicalDBKey + TAB + \
+	        str(imageKey) + TAB + \
+	        imageMgiTypeKey + TAB + \
+	        accPrivate + TAB + \
 	        accPreferred + TAB + \
 	        str(createdByKey) + TAB + \
 	        str(createdByKey) + TAB + \

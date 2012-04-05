@@ -101,6 +101,7 @@ import jpeginfo
 #
 #  CONSTANTS
 #
+GENEPAINT_LOGICALDB_KEY = '105'
 FIRST_IMAGE_FILE_INDEX = 16
 
 CAPTION = '''This image was constributed directly to GXD by the GenePaint database.  Additional images for this gene and 'virtual microscope' zoom capability for this image can be accessed via the GenePaint link at the bottom of this page.'''
@@ -266,6 +267,20 @@ def process ():
                 #
                 (xdim, ydim) = jpeginfo.getDimensions(pixelDBDir + '/' +
                                                       pixID + '.jpg')
+		#
+            	# Strip the imageName, analysis ID and image number of the filename.  
+		#
+            	#     imageName + analysis + '_' + imageNumber + 'B.jpg'
+            	#
+            	# where imageName is 2 characters
+            	# where analysis is 8 characters with leading 0's
+            	# where imageNumber is 5 characters with leading 0's
+            	#
+		imageName = filename[0:2]
+		analysis = filename[2:10].lstrip('0')
+            	imageNumber = filename[11:16].lstrip('0')
+		id = '%s,-A%s,-Asetstart,-A%s' % (imageName, analysis, imageNumber)
+		imageAccID = GENEPAINT_LOGICALDB_KEY + '|' + id
 
 		# for testing...print out the filename
                 #fpImageFile.write(filename + '\t')
@@ -278,7 +293,8 @@ def process ():
                                   str(ydim) + '\t' +
                                   figureLabel + '\t' +
                                   COPYRIGHT + '\t' +
-                                  CAPTION + '\n')
+                                  CAPTION + '\t' +
+				  imageAccID + '\n')
 
                 fpImagePaneFile.write(pixID + '\t\t' + str(xdim) + '\t' + str(ydim) + '\n')
 
