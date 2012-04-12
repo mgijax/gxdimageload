@@ -104,7 +104,7 @@ import jpeginfo
 GENEPAINT_LOGICALDB_KEY = '105'
 FIRST_IMAGE_FILE_INDEX = 16
 
-CAPTION = '''This image was constributed directly to GXD by the GenePaint database.  Additional images for this gene and 'virtual microscope' zoom capability for this image can be accessed via the GenePaint link at the bottom of this page.'''
+CAPTION = '''This image was contributed directly to GXD by the GenePaint database.  Additional images for this gene and 'virtual microscope' zoom capability for this image can be accessed via the GenePaint link at the bottom of this page.'''
 
 COPYRIGHT = '''Questions regarding this image or its use in publications should be directed to gpscience@mpibpc.mpg.de'''
 
@@ -297,6 +297,9 @@ def process ():
 				  imageAccID + '\n')
 
                 fpImagePaneFile.write(pixID + '\t\t' + str(xdim) + '\t' + str(ydim) + '\n')
+
+            else:
+		print 'Filename was not found in pixIDLookup: ', filename
 
             #
 	    # Add filename to imageUsed
