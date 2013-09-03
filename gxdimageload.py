@@ -64,6 +64,9 @@
 #
 # History
 #
+# 09/03/3013	lec
+#	- TR11350/remove thumbnail
+#
 # 02/13/2012	lec
 #	- TR10978/add x,y,width,heigth
 #
@@ -163,7 +166,6 @@ pixLogicalDBKey = '19'	# Logical DB Key for PIX ID
 pixPrivate = '1'	# Private status for PIX ID (true)
 
 FSimageTypeKey = 1072158	# Full Size Image Type key
-TNimageTypeKey = 1072159	# Thumbnail Image Type key
 
 # dictionaries to cache data for quicker lookup
 
@@ -354,30 +356,6 @@ def bcpFiles(
 	diagFile.write('%s\n' % bcpCmd)
 	os.system(bcpCmd)
 
-    # attach thumbnail image keys to fullsize images
-    # images are determined by reference
-    # the fullsize figureLabel = thumbnail figure label
-    # within a given reference
-
-    db.sql('''
-	select _Image_key, _Refs_key, figureLabel
-	into #thumbnail
-	from IMG_Image 
-	where _Refs_key = %s
-	and _ImageType_key = %s
-	''' % (referenceKey, TNimageTypeKey), None)
-
-    db.sql('''
-	update IMG_Image
-	set _ThumbnailImage_key = t._Image_key
-	from IMG_Image i, #thumbnail t
-	where i._Refs_key = %s
-	and i._ImageType_key = %s
-	and i._ThumbnailImage_key is null
-	and i._Refs_key = t._Refs_key
-	and i.figureLabel = t.figureLabel
-	''' % (referenceKey, FSimageTypeKey), None)
-	
     # update the max Accession ID value
     db.sql('exec ACC_setMax %d' % (recordsProcessed), None)
 
@@ -440,12 +418,7 @@ def processImageFile():
 
         # if no errors, process
 
-	if fullsizeKey != '':
-	    imageTypeKey = TNimageTypeKey
-	    updateFullSizeImage = 1
-        else:
-	    imageTypeKey = FSimageTypeKey
-	    updateFullSizeImage = 0
+	imageTypeKey = FSimageTypeKey
 
         outImageFile.write(str(imageKey) + TAB + \
 	    str(gxdMgiTypeKey) + TAB + \
