@@ -48,11 +48,14 @@
 #          7) Figure label
 #          8) Copyright note
 #          9) Caption note
+#          10) Image info
 #
 #      imagepane_Fullsize.txt - Tab-delimited fields:
 #
-#          1) Pixel DB accession number (numeric part)
-#          2) Panel label (blank)
+#           1) PIX ID (PIX:####)
+#           2: Pane Label
+#           3) X Dimension (width)
+#           4) Y Dimension (heigth)
 #
 #  Exit Codes:
 #
@@ -220,9 +223,9 @@ def process ():
                               str(ydim) + '\t' +
                               figureLabel + '\t' +
                               COPYRIGHT + '\t' +
-                              CAPTION + '\n')
+                              CAPTION + '\t\n')
 
-            fpImagePaneFile.write(pixID + '\t' + '\n')
+            fpImagePaneFile.write(pixID + '\t\t' + str(xdim) + '\t' + str(ydim) + '\n')
 
 	else:
 	  #print figureLabel
