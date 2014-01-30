@@ -110,7 +110,7 @@ inPaneFileName = os.environ['IMAGEPANEFILE']
 
 outFileQualifier = os.environ['OUTFILE_QUALIFIER']
 
-DEBUG = 0		# if 0, not in debug mode
+DEBUG = 1		# if 0, not in debug mode
 TAB = '\t'		# tab
 CRT = '\n'		# carriage return/newline
 bcpdelim = TAB		# bcp file delimiter
