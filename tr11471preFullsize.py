@@ -179,8 +179,9 @@ def process ():
     #
     # Process each line of the input file.
     #
-    line = fpPixFile.readline()
-    while line:
+    for line in fpPixFile.readlines():
+
+	print line
 
         #
         # Tokenize the input record and get the original image files name
