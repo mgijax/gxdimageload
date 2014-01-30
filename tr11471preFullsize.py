@@ -182,9 +182,10 @@ def process ():
     #
     # Process each line of the input file.
     #
+    counter = 0
     for line in fpPixFile.readlines():
 
-	print line
+	counter += 1
 
         #
         # Tokenize the input record and get the original image files name
@@ -228,11 +229,12 @@ def process ():
             fpImagePaneFile.write(pixID + '\t\t' + str(xdim) + '\t' + str(ydim) + '\n')
 
 	else:
-	  #print figureLabel
+	  print filename, figureLabel
 	  continue
 
         line = fpPixFile.readline()
 
+    print counter
     return 0
 
 
