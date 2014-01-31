@@ -141,7 +141,11 @@ def openFiles ():
     line = fpImageLoadFile.readline()
     while line:
         tokens = string.split(line[:-1], '\t')
-	key = tokens[2]
+
+	if len(tokens[2]) == 0:
+	    key = tokens[0]
+	else:
+	    key = tokens[2]
 	value = tokens
 	if not imageLookup.has_key(key):
 	    imageLookup[key] = []
@@ -194,7 +198,11 @@ def process ():
         #
         tokens = string.split(line[:-1], '\t')
         filename =  tokens[0]
-        pixID = tokens[1]
+
+	if filename.find('GUDMAP') >= 0:
+		pixID = ''
+        else:
+		pixID = tokens[1]
 
 	#
 	# tuple of imageLookup
@@ -211,10 +219,11 @@ def process ():
 	    #CAPTION = imageLookup[filename][0][1]
 	    CAPTION = x[1]
 
-            #
-            # Get the X an Y dimensions of the image file in pixel DB.
-            #
-            (xdim, ydim) = jpeginfo.getDimensions(pixelDBDir + '/' + pixID + '.jpg')
+	    if filename.find('GUDMAP') >= 0:
+		xdim = ''
+		ydim = ''
+	    else:
+            	(xdim, ydim) = jpeginfo.getDimensions(pixelDBDir + '/' + pixID + '.jpg')
 
             fpImageFile.write(jNumber + '\t' +
                               FULLSIZE_IMAGE_KEY + '\t' +
@@ -228,9 +237,8 @@ def process ():
 
             fpImagePaneFile.write(pixID + '\t\t' + str(xdim) + '\t' + str(ydim) + '\n')
 
-	else:
-	  print filename, figureLabel
-	  continue
+	#else:
+	#    print filename
 
         line = fpPixFile.readline()
 
