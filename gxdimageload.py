@@ -453,7 +453,8 @@ def processImageFile():
         accKey = accKey + 1
         mgiKey = mgiKey + 1
 
-	if len(pixID) > 0:
+	#if len(pixID) > 0:
+	if pixID.find('GUDMAP') < 0 and len(pixID) > 0:
 	    outAccFile.write(str(accKey) + TAB + \
 	        pixPrefix + str(pixID) + TAB + \
 	        pixPrefix + TAB + \

@@ -200,7 +200,7 @@ def process ():
         filename =  tokens[0]
 
 	if filename.find('GUDMAP') >= 0:
-		pixID = ''
+		pixID = filename
         else:
 		pixID = tokens[1]
 
