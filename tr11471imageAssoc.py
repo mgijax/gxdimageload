@@ -163,7 +163,8 @@ def process ():
     results = db.sql('''select figureLabel, _Image_key
                      from IMG_Image
                      where _Refs_key = %s
-                     and _ImageType_key = %s''' % (str(refKey), str(FULLSIZE_IMAGE_TYPE_KEY)), 'auto')
+                     and _ImageType_key = %s
+		     and creation_date = "02/03/2014"''' % (str(refKey), str(FULLSIZE_IMAGE_TYPE_KEY)), 'auto')
 
     #
     # Create an accession record for each fullsize image.
