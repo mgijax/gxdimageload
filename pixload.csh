@@ -50,6 +50,8 @@ cd `dirname $0` && source ./Configuration
 setenv JPGDIRECTORY	$1
 setenv OUTPUTFILE	$2
 
+echo ${JPGDIRECTORY}
+echo ${OUTPUTFILE}
 set accID=`cat ${PIXELDBCOUNTER}`
 rm -rf ${OUTPUTFILE}
 touch ${OUTPUTFILE}
@@ -57,13 +59,12 @@ echo "starting pix id: " $accID
 
 foreach j (${JPGDIRECTORY}/*.jpg)
 	set n=`basename $j`
-	echo $n
-#	cp $j ${PIXELDBDATA}/$accID.jpg
+	cp $j ${PIXELDBDATA}/$accID.jpg
 	echo "$n	$accID" >> ${OUTPUTFILE}
 	set accID=`expr $accID + 1`
 end
 
-#rm -rf ${PIXELDBCOUNTER}
-#echo $accID > ${PIXELDBCOUNTER}
+rm -rf ${PIXELDBCOUNTER}
+echo $accID > ${PIXELDBCOUNTER}
 echo "ending pix id: " $accID
 

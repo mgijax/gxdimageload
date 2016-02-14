@@ -64,6 +64,9 @@
 #
 # History
 #
+# 02/14/2016	sc
+#	- converted to postgres for LacZ project
+#
 # 09/03/3013	lec
 #	- TR11350/remove thumbnail
 #
@@ -137,9 +140,13 @@ imageTable = 'IMG_Image'
 paneTable = 'IMG_ImagePane'
 accTable = 'ACC_Accession'
 
-outImageFileName = datadir + '/' + imageTable + '_' + outFileQualifier + '.bcp'
-outPaneFileName = datadir + '/' + paneTable + '_' + outFileQualifier + '.bcp'
-outAccFileName = datadir + '/' + accTable + '_' + outFileQualifier + '.bcp'
+iFileName = imageTable + '_' + outFileQualifier + '.bcp'
+pFileName = paneTable + '_' + outFileQualifier + '.bcp'
+aFileName = accTable + '_' + outFileQualifier + '.bcp'
+
+outImageFileName = datadir + '/' + iFileName
+outPaneFileName = datadir + '/' + pFileName
+outAccFileName = datadir + '/' + aFileName
 
 diagFileName = ''	# diagnostic file name
 errorFileName = ''	# error file name
@@ -268,11 +275,9 @@ def init():
     except:
         exit(1, 'Could not open file %s\n' % outCopyrightFileName)
 
-    # Log all SQL
-    db.set_sqlLogFunction(db.sqlLogAll)
-
-    # Set Log File Descriptor
-    db.set_sqlLogFD(diagFile)
+    db.setTrace(True)
+    db.setAutoTranslate(False)
+    db.setAutoTranslateBE(False)
 
     diagFile.write('Start Date/Time: %s\n' % (mgi_utils.date()))
     diagFile.write('Server: %s\n' % (db.get_sqlServer()))
@@ -311,17 +316,20 @@ def setPrimaryKeys():
 
     global imageKey, paneKey, accKey, mgiKey
 
-    results = db.sql('select maxKey = max(_Image_key) + 1 from IMG_Image', 'auto')
+    results = db.sql('''select max(_Image_key) + 1 as maxKey 
+	from IMG_Image''', 'auto')
     imageKey = results[0]['maxKey']
 
-    results = db.sql('select maxKey = max(_ImagePane_key) + 1 from IMG_ImagePane', 'auto')
+    results = db.sql('''select max(_ImagePane_key) + 1 as maxKey 
+	from IMG_ImagePane''', 'auto')
     paneKey = results[0]['maxKey']
 
-    results = db.sql('select maxKey = max(_Accession_key) + 1 from ACC_Accession', 'auto')
+    results = db.sql('''select max(_Accession_key) + 1 as maxKey 
+	from ACC_Accession''', 'auto')
     accKey = results[0]['maxKey']
 
-    results = db.sql('select maxKey = maxNumericPart + 1 from ACC_AccessionMax ' + \
-        'where prefixPart = "%s"' % (mgiPrefix), 'auto')
+    results = db.sql('''select maxNumericPart + 1 as maxKey from ACC_AccessionMax 
+        where prefixPart = '%s' ''' % (mgiPrefix), 'auto')
     mgiKey = results[0]['maxKey']
 
 # Purpose:  BCPs the data into the database
@@ -344,24 +352,37 @@ def bcpFiles(
     outCaptionFile.close()
     outPaneFile.close()
     outAccFile.close()
+    
+    bcpCommand = os.environ['PG_DBUTILS'] + '/bin/bcpin.csh'
 
-    bcpI = 'cat %s | bcp %s..' % (passwordFileName, db.get_sqlDatabase())
-    bcpII = '-c -t\"%s' % (bcpdelim) + '" -S%s -U%s' % (db.get_sqlServer(), db.get_sqlUser())
+    #bcpI = 'cat %s | bcp %s..' % (passwordFileName, db.get_sqlDatabase())
+    #bcpII = '-c -t\"%s' % (bcpdelim) + '" -S%s -U%s' % (db.get_sqlServer(), db.get_sqlUser())
 
-    bcp1 = '%s%s in %s %s' % (bcpI, imageTable, outImageFileName, bcpII)
-    bcp2 = '%s%s in %s %s' % (bcpI, paneTable, outPaneFileName, bcpII)
-    bcp3 = '%s%s in %s %s' % (bcpI, accTable, outAccFileName, bcpII)
+    #bcp1 = '%s%s in %s %s' % (bcpI, imageTable, outImageFileName, bcpII)
+    bcp1 = '%s %s %s %s %s %s "\\t" "\\n" mgd' % \
+        (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), imageTable,
+	datadir, iFileName)
+
+    #bcp2 = '%s%s in %s %s' % (bcpI, paneTable, outPaneFileName, bcpII)
+    bcp2 = '%s %s %s %s %s %s "\\t" "\\n" mgd' % \
+        (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), paneTable,
+        datadir, pFileName)
+
+    #bcp3 = '%s%s in %s %s' % (bcpI, accTable, outAccFileName, bcpII)
+    bcp3 = '%s %s %s %s %s %s "\\t" "\\n" mgd' % \
+        (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), accTable,
+        datadir, aFileName)
 
     for bcpCmd in [bcp1, bcp2, bcp3]:
 	diagFile.write('%s\n' % bcpCmd)
 	os.system(bcpCmd)
 
     # update the max Accession ID value
-    db.sql('select * from ACC_setMax (%d)' % (recordsProcessed), None)
-
+    db.sql('''select * from ACC_setMax (%d)''' % (recordsProcessed), None)
+    db.commit()
     # update statistics
-    db.sql('update statistics %s' % (imageTable), None)
-    db.sql('update statistics %s' % (paneTable), None)
+    #db.sql('update statistics %s' % (imageTable), None)
+    #db.sql('update statistics %s' % (paneTable), None)
 
     return
 
@@ -379,7 +400,6 @@ def processImageFile():
 
     lineNum = 0
     # For each line in the input file
-
     for line in inImageFile.readlines():
 
         error = 0
@@ -401,7 +421,6 @@ def processImageFile():
 	    imageInfo = tokens[9]
         except:
             exit(1, 'Invalid Line (%d): %s\n' % (lineNum, line))
-
         imageClassKey = loadlib.verifyTerm('', imageVocabClassKey, imageClass, lineNum, errorFile)
         if imageClassKey == 0:
             # set error flag to true
@@ -498,7 +517,6 @@ def processImageFile():
 
 	if len(imageNote) > 0:
             outCaptionFile.write(mgiAccID + TAB + imageNote + CRT)
-
 	imagePix[pixID] = imageKey
         imageKey = imageKey + 1
 
@@ -518,7 +536,6 @@ def processImagePaneFile():
 
     lineNum = 0
     # For each line in the input file
-
     for line in inPaneFile.readlines():
 
         error = 0
@@ -534,9 +551,6 @@ def processImagePaneFile():
 	    paneHeight = tokens[3]
         except:
             exit(1, 'Invalid Line (%d): %s\n' % (lineNum, line))
-
-	#print str(paneKey)
-	#print str(imagePix[pixID])
 
 	paneX = 0
 	paneY = 0
@@ -560,8 +574,11 @@ def process():
 
     recordsProcessed = processImageFile()
     recordsProcessed = recordsProcessed + processImagePaneFile()
+    # before I added this commit - the drop trigger part of bcpin command hung
+    db.commit()
     bcpFiles(recordsProcessed)
-
+    # add another for good measure?
+    db.commit()
 #
 # Main
 #

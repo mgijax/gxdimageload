@@ -1,3 +1,15 @@
+TAG: gxdimageload-6-0-2-1
+DATE: 02/14/2016
+STAFF: sc
+CHANGES: TR12026 - LacZ Images
+1) gxdimageload.py - converted to postgres
+2) pixload.sh - uncommented pertinent code
+3) Added:
+a) impclacz.config
+b) impclaczPrepFullSize.csh
+c) impclaczPrepFullSize.py
+d) impclaczpixload.csh
+
 TAG: gxdimageload-5-1-7-5
 TAG: gxdimageload-5-1-7-4
 TAG: gxdimageload-5-1-7-3
