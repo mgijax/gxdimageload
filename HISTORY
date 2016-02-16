@@ -1,3 +1,10 @@
+TAG: gxdimageload-6-0-2-4
+DATE: 02/16/2016
+STAFF: sc
+CHANGES: TR12026 - LacZ Images
+impclacz.config - removed config that is already in main config
+impclaczPrepFullSize.csh - added calls to load caption and copyright notes
+
 TAG: gxdimageload-6-0-2-3
 TAG: gxdimageload-6-0-2-2
 TAG: gxdimageload-6-0-2-1
