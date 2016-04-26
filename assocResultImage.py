@@ -61,15 +61,8 @@ import mgi_utils
 import loadlib
 
 #
-#  CONSTANTS
-#
-BCP_DELIM = '\t'
-
-#
 #  GLOBALS
 #
-user = os.environ['MGD_DBUSER']
-passwordFile = os.environ['MGD_DBPASSWORDFILE']
 resultImageFile = os.environ['RESULT_IMAGE_FILE']
 jNumber = os.environ['REFERENCE']
 
@@ -77,15 +70,8 @@ FULLSIZE_IMAGE_TYPE_KEY = 1072158
 refKey = ''
 paneKeyLookup = {}
 assocTable = 'GXD_InSituResultImage'
-
-#
-# The bcp file should be created in the same directory as the input file.
-#
-dir, file = os.path.split(resultImageFile)
-bcpFile = dir + '/' + assocTable + '.bcp'
-
+bcpFile = assocTable + '.bcp'
 cdate = mgi_utils.date('%m/%d/%Y')
-
 
 #
 # Purpose: Perform initialization steps.
@@ -95,13 +81,8 @@ cdate = mgi_utils.date('%m/%d/%Y')
 # Throws: Nothing
 #
 def init ():
-
     db.useOneConnection(1)
-    db.set_sqlUser(user)
-    db.set_sqlPasswordFromFile(passwordFile)
-
     return
-
 
 #
 # Purpose: Create a dictionary for looking up the image pane key for a
@@ -134,10 +115,9 @@ def buildPaneKeyLookup ():
         figureLabel = r['figureLabel']
         paneKey = r['_ImagePane_key']
         paneKeyLookup[figureLabel] = paneKey
-        #print 'paneKeyLookup[' + figureLabel + '] = ' + str(paneKey)
+        print 'paneKeyLookup[' + figureLabel + '] = ' + str(paneKey)
 
     return
-
 
 #
 # Purpose: Open the files.
@@ -147,7 +127,7 @@ def buildPaneKeyLookup ():
 # Throws: Nothing
 #
 def openFiles ():
-    global fpResultImageFile, fpBCPFile
+    global eResultImageFile, fpBCPFile
 
     #
     # Open the input file.
@@ -169,7 +149,6 @@ def openFiles ():
 
     return
 
-
 #
 # Purpose: Close the files.
 # Returns: Nothing
@@ -180,9 +159,7 @@ def openFiles ():
 def closeFiles ():
     fpResultImageFile.close()
     fpBCPFile.close()
-
     return
-
 
 #
 # Purpose: Load the bcp file into the database.
@@ -194,50 +171,19 @@ def closeFiles ():
 def runBCP ():
 
     sys.stdout.flush()
+    db.commit()
+    db.useOneConnection(0)
 
-    bcpCmd = 'cat %s | bcp %s..%s in %s -c -t"%s" -S%s -U%s' % (passwordFile, db.get_sqlDatabase(), assocTable, bcpFile, BCP_DELIM, db.get_sqlServer(), db.get_sqlUser())
+    bcpCommand = os.environ['PG_DBUTILS'] + '/bin/bcpin.csh'
+    currentDir = os.getcwd()
+
+    bcpCmd =  '%s %s %s %s %s %s "\\t" "\\n" mgd' \
+        % (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), assocTable, currentDir, bcpFile)
+
+    diagFile.write('%s\n' % bcpCmd)
     os.system(bcpCmd)
 
-    db.sql('update statistics %s' % (assocTable), None)
-
     return
-
-#
-# Purpose: Update the Expression cache hasImage bit
-# Returns: Nothing
-# Assumes: Nothing
-# Effects: Nothing
-# Throws: Nothing
-#
-def updateExpressionCache():
-
-    #
-    # NOTE:
-    # this must be done AFTER the data is loaded
-    # that is AFTER runBCP is completed
-    #
-    # need to update the hasImage bit in the expression cache
-    # the expression cache is created by the assayload
-    # but since the images are not attached until AFTER the assayload is run,
-    # the hasImage bit needs to be re-set to "1".
-    #
-
-    execSQL='''update GXD_Expression set hasImage = 1
-            from IMG_Image i, IMG_ImagePane p, 
-            GXD_Specimen s, GXD_InSituResult ir, GXD_InSituResultImage iri, GXD_Expression e
-            where i._MGIType_key = 8 
-            and i._ImageType_key = %d
-            and i.xDim is not null
-            and i._Image_key = p._Image_key
-            and p._ImagePane_key = iri._ImagePane_key
-            and iri._Result_key = ir._Result_key
-            and ir._Specimen_key = s._Specimen_key
-            and s._Assay_key = e._Assay_key
-            and e.hasImage = 0
-            and e._Refs_key = %d''' % (FULLSIZE_IMAGE_TYPE_KEY, refKey)
-
-    print execSQL
-    db.sql(execSQL, None)
 
 #
 # Purpose: Create the bcp file from the results/image data in the input file.
@@ -251,7 +197,9 @@ def process ():
     #
     # Check each result key/figure label pair in the input file.
     #
+
     line = fpResultImageFile.readline()
+
     while line:
         tokens = string.split(line[:-1], '\t')
         resultKey = tokens[0]
@@ -264,15 +212,13 @@ def process ():
         #
         if paneKeyLookup.has_key(figureLabel):
             paneKey = paneKeyLookup[figureLabel]
-            fpBCPFile.write(str(resultKey) + '\t' + str(paneKey) + '\t' +
-                            cdate + '\t' + cdate + '\n')
+            fpBCPFile.write(str(resultKey) + '\t' + str(paneKey) + '\t' + cdate + '\t' + cdate + '\n')
         else:
             print 'Missing pane key for figure label: ' + figureLabel
 
         line = fpResultImageFile.readline()
 
-    return 0
-
+    return
 
 #
 # Main
@@ -283,6 +229,5 @@ openFiles()
 process()
 closeFiles()
 runBCP()
-updateExpressionCache()
 sys.exit(0)
 
