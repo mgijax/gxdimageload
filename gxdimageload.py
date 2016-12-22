@@ -276,8 +276,6 @@ def init():
         exit(1, 'Could not open file %s\n' % outCopyrightFileName)
 
     db.setTrace(True)
-    db.setAutoTranslate(False)
-    db.setAutoTranslateBE(False)
 
     diagFile.write('Start Date/Time: %s\n' % (mgi_utils.date()))
     diagFile.write('Server: %s\n' % (db.get_sqlServer()))
