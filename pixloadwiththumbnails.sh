@@ -17,6 +17,7 @@
 #
 #      PIXELDB_FILES
 #      PIX_FULLSIZE
+#      PIX_THUMBNAIL
 #
 #  Inputs:
 #
@@ -25,10 +26,19 @@
 #
 #      - FULLSIZE_IMAGE_DIR
 #
+#      - THUMBNAIL_IMAGE_DIR
+#
 #  Outputs:
 #
 #      - Pix_Fullsize.txt (PIX_FULLSIZE) which contains a list of all of
 #        the fullsize image files that are being added to pixel DB.  The
+#        file has the following tab-delimited fields:
+#
+#            1) Image file name (e.g. 1700009P17Rik_E7.5_lat.jpg)
+#            2) Accession number (e.g. 45678)
+#
+#      - Pix_Thumbnail.txt (PIX_THUMBNAIL) which contains a list of all of
+#        the thumbnail image files that are being added to pixel DB.  The
 #        file has the following tab-delimited fields:
 #
 #            1) Image file name (e.g. 1700009P17Rik_E7.5_lat.jpg)
@@ -57,6 +67,8 @@ ACCID=`cat ${PIXELDBCOUNTER}`
 echo ${PIX_FULLSIZE}
 rm -f ${PIX_FULLSIZE}
 touch ${PIX_FULLSIZE}
+#rm -f ${PIX_THUMBNAIL}
+#touch ${PIX_THUMBNAIL}
 
 echo "Starting pix id: ${ACCID}"
 cd ${FULLSIZE_IMAGE_DIR}
@@ -68,6 +80,18 @@ do
     LAST_ACCID=${ACCID}
     ACCID=`expr ${ACCID} + 1`
 done
+
+#echo "Starting pix id: ${ACCID}"
+#cd ${THUMBNAIL_IMAGE_DIR}
+#for FILE in `ls ${THUMBNAIL_IMAGE_DIR}`
+#do
+#    PIXELDBFILE=${PIXELDBDATA}/${ACCID}.jpg
+#    cp ${FILE} ${PIXELDBFILE}
+#    echo "${FILE}	${ACCID}" >> ${PIX_THUMBNAIL}
+#    LAST_ACCID=${ACCID}
+#    ACCID=`expr ${ACCID} + 1`
+#done
+#echo "Ending pix id: ${LAST_ACCID}"
 
 # Advance the pixel DB counter to the next available accession number.
 #
