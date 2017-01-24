@@ -13,10 +13,6 @@ endif
 
 source ${MGICONFIG}/master.config.csh
 
-# data, log and report directories
-setenv COPYRIGHTFILE    ${DATADIR}/IMG_Copyright.in
-setenv CAPTIONFILE      ${DATADIR}/IMG_Caption.in
-
 # Pixel DB Data Directory
 setenv PIXELDBDATA	/data/pixeldb
 
