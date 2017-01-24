@@ -71,6 +71,7 @@ done
 
 # Advance the pixel DB counter to the next available accession number.
 #
+rm -rf ${PIXELDBCOUNTER}
 echo "Advance pixel DB counter to: ${ACCID}"
 echo ${ACCID} > ${PIXELDBCOUNTER}
 
