@@ -362,7 +362,7 @@ def bcpFiles(
 
     bcp1 = bcpCommand % (imageTable, outImageFileName)
     bcp2 = bcpCommand % (paneTable, outPaneFileName)
-    bcp3 = bcpCommand % (Table, outAccFileName)
+    bcp3 = bcpCommand % (accTable, outAccFileName)
 
     for bcpCmd in [bcp1, bcp2, bcp3]:
 	diagFile.write('%s\n' % bcpCmd)
