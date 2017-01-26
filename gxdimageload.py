@@ -99,15 +99,14 @@ import loadlib
 #
 # from configuration file
 #
-mode = os.environ['IMAGELOADMODE']
-createdBy = os.environ['CREATEDBY']
 user = os.environ['MGD_DBUSER']
 passwordFileName = os.environ['MGD_DBPASSWORDFILE']
 
+mode = os.environ['IMAGELOADMODE']
 bcpCommand = os.environ['PG_DBUTILS'] + '/bin/bcpin.csh '
-currentDir = os.getcwd()
+currentDir = os.environ['IMAGELOADDATADIR']
+createdBy = os.environ['CREATEDBY']
 
-datadir = os.environ['IMAGELOADDATADIR']
 outCopyrightFileName = os.environ['COPYRIGHTFILE']
 outCaptionFileName = os.environ['CAPTIONFILE']
 
@@ -143,13 +142,15 @@ imageTable = 'IMG_Image'
 paneTable = 'IMG_ImagePane'
 accTable = 'ACC_Accession'
 
+# file names 
 iFileName = imageTable + '_' + outFileQualifier + '.bcp'
 pFileName = paneTable + '_' + outFileQualifier + '.bcp'
 aFileName = accTable + '_' + outFileQualifier + '.bcp'
 
-outImageFileName = datadir + '/' + iFileName
-outPaneFileName = datadir + '/' + pFileName
-outAccFileName = datadir + '/' + aFileName
+# file names with directory prefix
+outImageFileName = currentDir + '/' + iFileName
+outPaneFileName = currentDir + '/' + pFileName
+outAccFileName = currentDir + '/' + aFileName
 
 diagFileName = ''	# diagnostic file name
 errorFileName = ''	# error file name
@@ -230,8 +231,8 @@ def init():
  
     bcpCommand = bcpCommand + db.get_sqlServer() + ' ' + db.get_sqlDatabase() + ' %s ' + currentDir + ' %s "\\t" "\\n" mgd'
 
-    diagFileName = datadir + '/gxdimageload.diagnostics'
-    errorFileName = datadir + '/gxdimageload.error'
+    diagFileName = currentDir + '/gxdimageload.diagnostics'
+    errorFileName = currentDir + '/gxdimageload.error'
 
     try:
         diagFile = open(diagFileName, 'w')
@@ -360,9 +361,9 @@ def bcpFiles(
 
     db.commit()
 
-    bcp1 = bcpCommand % (imageTable, outImageFileName)
-    bcp2 = bcpCommand % (paneTable, outPaneFileName)
-    bcp3 = bcpCommand % (accTable, outAccFileName)
+    bcp1 = bcpCommand % (imageTable, iFileName)
+    bcp2 = bcpCommand % (paneTable, pFileName)
+    bcp3 = bcpCommand % (accTable, aFileName)
 
     for bcpCmd in [bcp1, bcp2, bcp3]:
 	diagFile.write('%s\n' % bcpCmd)
