@@ -105,6 +105,7 @@ user = os.environ['MGD_DBUSER']
 passwordFileName = os.environ['MGD_DBPASSWORDFILE']
 
 bcpCommand = os.environ['PG_DBUTILS'] + '/bin/bcpin.csh '
+currentDir = os.getcwd()
 
 datadir = os.environ['IMAGELOADDATADIR']
 outCopyrightFileName = os.environ['COPYRIGHTFILE']
