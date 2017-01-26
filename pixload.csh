@@ -49,9 +49,9 @@ cd `dirname $0` && source ./Configuration
 
 setenv JPGDIRECTORY	$1
 setenv OUTPUTFILE	$2
-
 echo ${JPGDIRECTORY}
 echo ${OUTPUTFILE}
+
 set accID=`cat ${PIXELDBCOUNTER}`
 rm -rf ${OUTPUTFILE}
 touch ${OUTPUTFILE}

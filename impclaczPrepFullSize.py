@@ -82,6 +82,7 @@ imageFile = os.environ['IMAGEFILE'] #  gxdimageload IMG_Image input file
 imagePaneFile = os.environ['IMAGEPANEFILE'] # gxdimageload IMG_Pane input file
 jNumber = os.environ['REFERENCE']
 imageLookup = {}
+
 #
 # Purpose: Open the files.
 # Returns: Nothing
@@ -101,7 +102,6 @@ def initialize ():
     except:
         sys.stderr.write('Cannot open input file: ' + pixFile + '\n')
         sys.exit(1)
-
 
     #
     # Open Connie's input file

@@ -19,15 +19,3 @@ setenv PIXELDBDATA	/data/pixeldb
 # Pixel DB Accession Counter
 setenv PIXELDBCOUNTER	${PIXELDBDATA}/accession/counter
 
-# Load Mode
-setenv LOADMODE		load
-setenv NOTELOADMODE	incremental
-
-# Created By
-setenv CREATEDBY	jfinger
-
-setenv COPYRIGHTNOTETYPE "Copyright"
-setenv CAPTIONNOTETYPE  "Caption"
-setenv OBJECTTYPE	Image
-
-

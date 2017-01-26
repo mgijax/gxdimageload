@@ -22,7 +22,7 @@
 #		field 1: Reference (J:####)
 #		field 2: Full Size Image Key (can be blank)
 #		field 3: Image Class (_Vocab_key = 83)
-#		field 4: PIX ID (PIX:#####)
+#		field 4: PIX ID (#####)
 #		field 5: X Dimension
 #		field 6: Y Dimension
 #               field 7: Figure Label
@@ -33,7 +33,7 @@
 #			where Image AccID is accID
 #
 #	Image Pane file, a tab-delimited file in the format:
-#		field 1: PIX ID (PIX:####)
+#		field 1: PIX ID (####)
 #		field 2: Pane Label
 #		field 3: X Dimension (width)
 #		field 4: Y Dimension (heigth)
@@ -104,6 +104,8 @@ createdBy = os.environ['CREATEDBY']
 user = os.environ['MGD_DBUSER']
 passwordFileName = os.environ['MGD_DBPASSWORDFILE']
 
+bcpCommand = os.environ['PG_DBUTILS'] + '/bin/bcpin.csh '
+
 datadir = os.environ['IMAGELOADDATADIR']
 outCopyrightFileName = os.environ['COPYRIGHTFILE']
 outCaptionFileName = os.environ['CAPTIONFILE']
@@ -111,7 +113,7 @@ outCaptionFileName = os.environ['CAPTIONFILE']
 inImageFileName = os.environ['IMAGEFILE']
 inPaneFileName = os.environ['IMAGEPANEFILE']
 
-outFileQualifier = os.environ['OUTFILE_QUALIFIER']
+outFileQualifier = os.environ['QUALIFIER_FULLSIZE']
 
 DEBUG = 0		# if 0, not in debug mode
 TAB = '\t'		# tab
@@ -214,8 +216,10 @@ def exit(
 # Throws: nothing
 
 def init():
+    global bcpCommand
     global diagFile, errorFile, inputFile, errorFileName, diagFileName
-    global outImageFile, outCopyrightFile, outCaptionFile, outPaneFile, outAccFile
+    global outImageFile, outPaneFile, outAccFile
+    global outCopyrightFile, outCaptionFile
     global inImageFile, inPaneFile
     global createdByKey
  
@@ -223,6 +227,8 @@ def init():
     db.set_sqlUser(user)
     db.set_sqlPasswordFromFile(passwordFileName)
  
+    bcpCommand = bcpCommand + db.get_sqlServer() + ' ' + db.get_sqlDatabase() + ' %s ' + currentDir + ' %s "\\t" "\\n" mgd'
+
     diagFileName = datadir + '/gxdimageload.diagnostics'
     errorFileName = datadir + '/gxdimageload.error'
 
@@ -346,30 +352,16 @@ def bcpFiles(
         return
 
     outImageFile.close()
-    outCopyrightFile.close()
-    outCaptionFile.close()
     outPaneFile.close()
     outAccFile.close()
-    
-    bcpCommand = os.environ['PG_DBUTILS'] + '/bin/bcpin.csh'
+    outCopyrightFile.close()
+    outCaptionFile.close()
 
-    #bcpI = 'cat %s | bcp %s..' % (passwordFileName, db.get_sqlDatabase())
-    #bcpII = '-c -t\"%s' % (bcpdelim) + '" -S%s -U%s' % (db.get_sqlServer(), db.get_sqlUser())
+    db.commit()
 
-    #bcp1 = '%s%s in %s %s' % (bcpI, imageTable, outImageFileName, bcpII)
-    bcp1 = '%s %s %s %s %s %s "\\t" "\\n" mgd' % \
-        (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), imageTable,
-	datadir, iFileName)
-
-    #bcp2 = '%s%s in %s %s' % (bcpI, paneTable, outPaneFileName, bcpII)
-    bcp2 = '%s %s %s %s %s %s "\\t" "\\n" mgd' % \
-        (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), paneTable,
-        datadir, pFileName)
-
-    #bcp3 = '%s%s in %s %s' % (bcpI, accTable, outAccFileName, bcpII)
-    bcp3 = '%s %s %s %s %s %s "\\t" "\\n" mgd' % \
-        (bcpCommand, db.get_sqlServer(), db.get_sqlDatabase(), accTable,
-        datadir, aFileName)
+    bcp1 = bcpCommand % (imageTable, outImageFileName)
+    bcp2 = bcpCommand % (paneTable, outPaneFileName)
+    bcp3 = bcpCommand % (Table, outAccFileName)
 
     for bcpCmd in [bcp1, bcp2, bcp3]:
 	diagFile.write('%s\n' % bcpCmd)
@@ -378,9 +370,6 @@ def bcpFiles(
     # update the max Accession ID value
     db.sql('''select * from ACC_setMax (%d)''' % (recordsProcessed), None)
     db.commit()
-    # update statistics
-    #db.sql('update statistics %s' % (imageTable), None)
-    #db.sql('update statistics %s' % (paneTable), None)
 
     return
 
@@ -397,7 +386,9 @@ def processImageFile():
     global referenceKey
 
     lineNum = 0
+
     # For each line in the input file
+
     for line in inImageFile.readlines():
 
         error = 0
@@ -419,14 +410,13 @@ def processImageFile():
 	    imageInfo = tokens[9]
         except:
             exit(1, 'Invalid Line (%d): %s\n' % (lineNum, line))
+
         imageClassKey = loadlib.verifyTerm('', imageVocabClassKey, imageClass, lineNum, errorFile)
         if imageClassKey == 0:
-            # set error flag to true
             error = 1
 
         referenceKey = loadlib.verifyReference(jnum, lineNum, errorFile)
         if referenceKey == 0:
-            # set error flag to true
             error = 1
 
         # if errors, continue to next record
@@ -470,12 +460,11 @@ def processImageFile():
         accKey = accKey + 1
         mgiKey = mgiKey + 1
 
-	#if len(pixID) > 0:
 	if pixID.find('GUDMAP') < 0 and len(pixID) > 0:
 	    outAccFile.write(str(accKey) + TAB + \
 	        pixPrefix + str(pixID) + TAB + \
 	        pixPrefix + TAB + \
-	        str(pixID) + TAB + \
+	        pixID + TAB + \
 	        pixLogicalDBKey + TAB + \
 	        str(imageKey) + TAB + \
 	        imageMgiTypeKey + TAB + \
@@ -515,6 +504,7 @@ def processImageFile():
 
 	if len(imageNote) > 0:
             outCaptionFile.write(mgiAccID + TAB + imageNote + CRT)
+
 	imagePix[pixID] = imageKey
         imageKey = imageKey + 1
 
@@ -572,11 +562,8 @@ def process():
 
     recordsProcessed = processImageFile()
     recordsProcessed = recordsProcessed + processImagePaneFile()
-    # before I added this commit - the drop trigger part of bcpin command hung
-    db.commit()
     bcpFiles(recordsProcessed)
-    # add another for good measure?
-    db.commit()
+
 #
 # Main
 #
