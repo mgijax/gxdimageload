@@ -75,12 +75,23 @@ URL = ''
 #
 #  GLOBALS
 #
-pixelDBDir = os.environ['PIXELDBDATA'] # /data/pixeldb
-pixFile = os.environ['PIX_MAPPING'] # this is pixeload mapping file
-inFile = os.environ['INPUT_FILE'] # Connie's input file
-imageFile = os.environ['IMAGEFILE'] #  gxdimageload IMG_Image input file
-imagePaneFile = os.environ['IMAGEPANEFILE'] # gxdimageload IMG_Pane input file
+# /data/pixeldb
+pixelDBDir = os.environ['PIXELDBDATA'] 
+
+# this is pixeload mapping file
+pixFile = os.environ['PIX_MAPPING'] 
+
+# Connie's input file
+inFile = os.environ['INPUT_FILE'] 
+
+# gxdimageload IMG_Image input file
+imageFile = os.environ['IMAGEFILE'] 
+
+# gxdimageload IMG_Pane input file
+imagePaneFile = os.environ['IMAGEPANEFILE'] 
+
 jNumber = os.environ['REFERENCE']
+
 imageLookup = {}
 
 #
