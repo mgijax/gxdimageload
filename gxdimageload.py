@@ -322,20 +322,16 @@ def setPrimaryKeys():
 
     global imageKey, paneKey, accKey, mgiKey
 
-    results = db.sql('''select max(_Image_key) + 1 as maxKey 
-	from IMG_Image''', 'auto')
+    results = db.sql(''' select nextval('img_image_seq') as maxKey ''', 'auto')
     imageKey = results[0]['maxKey']
 
-    results = db.sql('''select max(_ImagePane_key) + 1 as maxKey 
-	from IMG_ImagePane''', 'auto')
+    results = db.sql(''' select nextval('img_imagepane_seq') as maxKey ''', 'auto')
     paneKey = results[0]['maxKey']
 
-    results = db.sql('''select max(_Accession_key) + 1 as maxKey 
-	from ACC_Accession''', 'auto')
+    results = db.sql('''select max(_Accession_key) + 1 as maxKey from ACC_Accession''', 'auto')
     accKey = results[0]['maxKey']
 
-    results = db.sql('''select maxNumericPart + 1 as maxKey from ACC_AccessionMax 
-        where prefixPart = '%s' ''' % (mgiPrefix), 'auto')
+    results = db.sql('''select maxNumericPart + 1 as maxKey from ACC_AccessionMax where prefixPart = '%s' ''' % (mgiPrefix), 'auto')
     mgiKey = results[0]['maxKey']
 
 # Purpose:  BCPs the data into the database
@@ -371,6 +367,14 @@ def bcpFiles(
 
     # update the max Accession ID value
     db.sql('''select * from ACC_setMax (%d)''' % (recordsProcessed), None)
+    db.commit()
+
+    # update img_image_seq auto-sequence
+    db.sql(''' select setval('img_image_seq', (select max(_Image_key) from IMG_Image)) ''', None)
+    db.commit()
+
+    # update img_imagepane_seq auto-sequence
+    db.sql(''' select setval('img_imagepane_seq', (select max(_ImagePane_key) from IMG_ImagePane)) ''', None)
     db.commit()
 
     return
