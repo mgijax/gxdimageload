@@ -167,7 +167,6 @@ createdByKey = ''
 
 imageMgiTypeKey = '9'	# Image
 imageVocabClassKey = '83'	# Image Class Vocabulary
-gxdMgiTypeKey = '8'	# MGI Type for Image records
 mgiPrefix = "MGI:"	# Prefix for MGI accession ID
 accLogicalDBKey = '1'	# Logical DB Key for MGI accession ID
 accPrivate = '0'	# Private status for MGI accession ID (false)
@@ -434,7 +433,6 @@ def processImageFile():
 	imageTypeKey = FSimageTypeKey
 
         outImageFile.write(str(imageKey) + TAB + \
-	    str(gxdMgiTypeKey) + TAB + \
 	    str(imageClassKey) + TAB + \
 	    str(imageTypeKey) + TAB + \
 	    str(referenceKey) + TAB + \
