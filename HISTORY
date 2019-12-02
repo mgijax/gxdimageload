@@ -1,8 +1,7 @@
-TAG: gxdload-6-0-15-?
-DATE: 04/24/2019
+TAG: gxdload-6-0-15-1
+DATE: 12/02/2019
 STAFF: lec 
-CHANGES:
-1) TR13007/RNA Sequence project
+CHANGES: TR13007/RNA Sequence project
 add IMG_Image/IMG_ImagePane autosequence to gxdimageload.py
 
 TAG: gxdload-6-0-10-1
