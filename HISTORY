@@ -1,3 +1,9 @@
+TAG: gxdload-6-0-16-1
+DATE: 03/25/2021
+STAFF: sc
+CHANGES: TR13240 loading lacz images
+gxdimageload.py - updated for python3
+
 TAG: gxdload-6-0-15-1
 DATE: 12/02/2019
 STAFF: lec 

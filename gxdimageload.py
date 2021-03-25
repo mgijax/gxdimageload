@@ -7,47 +7,47 @@
 #
 # Purpose:
 #
-#	To load new Images into IMG Structures
+#       To load new Images into IMG Structures
 #
 # Requirements Satisfied by This Program:
 #
 # Usage:
-#	gxdimageload.py
+#       gxdimageload.py
 #
 # Envvars:
 #
 # Inputs:
 #
 #       Image file, a tab-delimited file in the format:
-#		field 1: Reference (J:####)
-#		field 2: Full Size Image Key (can be blank)
-#		field 3: Image Class (_Vocab_key = 83)
-#		field 4: PIX ID (#####)
-#		field 5: X Dimension
-#		field 6: Y Dimension
+#               field 1: Reference (J:####)
+#               field 2: Full Size Image Key (can be blank)
+#               field 3: Image Class (_Vocab_key = 83)
+#               field 4: PIX ID (#####)
+#               field 5: X Dimension
+#               field 6: Y Dimension
 #               field 7: Figure Label
 #               field 8: Copyright Note
 #               field 9: Image Note
-#		field 10: LogicalDB|Image AccID (optional)
-#			where LogicalDB is the ldb of the URL to which to attach the accID
-#			where Image AccID is accID
+#               field 10: LogicalDB|Image AccID (optional)
+#                       where LogicalDB is the ldb of the URL to which to attach the accID
+#                       where Image AccID is accID
 #
-#	Image Pane file, a tab-delimited file in the format:
-#		field 1: PIX ID (####)
-#		field 2: Pane Label
-#		field 3: X Dimension (width)
-#		field 4: Y Dimension (heigth)
+#       Image Pane file, a tab-delimited file in the format:
+#               field 1: PIX ID (####)
+#               field 2: Pane Label
+#               field 3: X Dimension (width)
+#               field 4: Y Dimension (heigth)
 #
 # Outputs:
 #
 #       BCP files:
 #
-#       IMG_Image.bcp			master Image records
-#	IMG_ImagePane.bcp		Image Pane records
-#	ACC_Accession.bcp (fullsize, thumbnail, images)
+#       IMG_Image.bcp                   master Image records
+#       IMG_ImagePane.bcp               Image Pane records
+#       ACC_Accession.bcp (fullsize, thumbnail, images)
 #
-#	IMG_Copyright.in		input file for noteload
-#	IMG_Caption.in			input file for noteload
+#       IMG_Copyright.in                input file for noteload
+#       IMG_Caption.in                  input file for noteload
 #
 #       Diagnostics file of all input parameters and SQL commands
 #       Error file
@@ -56,7 +56,7 @@
 #
 # Assumes:
 #
-#	That no one else is adding records to the database.
+#       That no one else is adding records to the database.
 #
 # Bugs:
 #
@@ -64,27 +64,27 @@
 #
 # History
 #
-# 02/14/2016	sc
-#	- converted to postgres for LacZ project
+# 02/14/2016    sc
+#       - converted to postgres for LacZ project
 #
-# 09/03/3013	lec
-#	- TR11350/remove thumbnail
+# 09/03/3013    lec
+#       - TR11350/remove thumbnail
 #
-# 02/13/2012	lec
-#	- TR10978/add x,y,width,heigth
+# 02/13/2012    lec
+#       - TR10978/add x,y,width,heigth
 #
-# 11/24/2010	lec
-#	- TR10033/image class
+# 11/24/2010    lec
+#       - TR10033/image class
 #
-# 05/19/2010	lec
-#	- TR10220/updating the Thumbnail key for the Fullsize record
-#	- (see TR10161/TRT10159/TR9485 for examples)
-#	see bcpFiles...added db.sql() to update the IMG_Image._ThumbnailImage_key
-#	after the new fullsize/thumbnail images have been loaded.
+# 05/19/2010    lec
+#       - TR10220/updating the Thumbnail key for the Fullsize record
+#       - (see TR10161/TRT10159/TR9485 for examples)
+#       see bcpFiles...added db.sql() to update the IMG_Image._ThumbnailImage_key
+#       after the new fullsize/thumbnail images have been loaded.
 #
-# 11/01/2006	lec
-#	- TR 8002; changes to support bulk loading of thumbnail images
-#	  and associations between thumbnails and pre-existing full size images.
+# 11/01/2006    lec
+#       - TR 8002; changes to support bulk loading of thumbnail images
+#         and associations between thumbnails and pre-existing full size images.
 #
 
 import sys
@@ -115,15 +115,15 @@ inPaneFileName = os.environ['IMAGEPANEFILE']
 
 outFileQualifier = os.environ['QUALIFIER_FULLSIZE']
 
-DEBUG = 0		# if 0, not in debug mode
-TAB = '\t'		# tab
-CRT = '\n'		# carriage return/newline
-bcpdelim = TAB		# bcp file delimiter
+DEBUG = 0               # if 0, not in debug mode
+TAB = '\t'              # tab
+CRT = '\n'              # carriage return/newline
+bcpdelim = TAB          # bcp file delimiter
 
-bcpon = 1		# can the bcp files be bcp-ed into the database?  default is yes.
+bcpon = 1               # can the bcp files be bcp-ed into the database?  default is yes.
 
-diagFile = ''		# diagnostic file descriptor
-errorFile = ''		# error file descriptor
+diagFile = ''           # diagnostic file descriptor
+errorFile = ''          # error file descriptor
 
 # input files
 
@@ -132,10 +132,10 @@ inPaneFile = ''          # file descriptor
 
 # output files
 
-outImageFile = ''	# file descriptor
-outCopyrightFile = ''	# file descriptor
-outCaptionFile = ''	# file descriptor
-outPaneFile = ''	# file descriptor
+outImageFile = ''       # file descriptor
+outCopyrightFile = ''   # file descriptor
+outCaptionFile = ''     # file descriptor
+outPaneFile = ''        # file descriptor
 outAccFile = ''         # file descriptor
 
 imageTable = 'IMG_Image'
@@ -152,30 +152,30 @@ outImageFileName = currentDir + '/' + iFileName
 outPaneFileName = currentDir + '/' + pFileName
 outAccFileName = currentDir + '/' + aFileName
 
-diagFileName = ''	# diagnostic file name
-errorFileName = ''	# error file name
+diagFileName = ''       # diagnostic file name
+errorFileName = ''      # error file name
 
 # primary keys
 
 imageKey = 0            # IMG_Image._Image_key
-paneKey = 0		# IMG_ImagePane._ImagePane_key
+paneKey = 0             # IMG_ImagePane._ImagePane_key
 accKey = 0              # ACC_Accession._Accession_key
 mgiKey = 0              # ACC_AccessionMax.maxNumericPart
 createdByKey = ''
 
 # accession constants
 
-imageMgiTypeKey = '9'	# Image
-imageVocabClassKey = '83'	# Image Class Vocabulary
-mgiPrefix = "MGI:"	# Prefix for MGI accession ID
-accLogicalDBKey = '1'	# Logical DB Key for MGI accession ID
-accPrivate = '0'	# Private status for MGI accession ID (false)
-accPreferred = '1'	# Preferred status MGI accession ID (true)
-pixPrefix = 'PIX:'	# Prefix for PIX
-pixLogicalDBKey = '19'	# Logical DB Key for PIX ID
-pixPrivate = '1'	# Private status for PIX ID (true)
+imageMgiTypeKey = '9'   # Image
+imageVocabClassKey = '83'       # Image Class Vocabulary
+mgiPrefix = "MGI:"      # Prefix for MGI accession ID
+accLogicalDBKey = '1'   # Logical DB Key for MGI accession ID
+accPrivate = '0'        # Private status for MGI accession ID (false)
+accPreferred = '1'      # Preferred status MGI accession ID (true)
+pixPrefix = 'PIX:'      # Prefix for PIX
+pixLogicalDBKey = '19'  # Logical DB Key for PIX ID
+pixPrivate = '1'        # Private status for PIX ID (true)
 
-FSimageTypeKey = 1072158	# Full Size Image Type key
+FSimageTypeKey = 1072158        # Full Size Image Type key
 
 # dictionaries to cache data for quicker lookup
 
@@ -237,12 +237,12 @@ def init():
         diagFile = open(diagFileName, 'w')
     except:
         exit(1, 'Could not open file %s\n' % diagFileName)
-		
+                
     try:
         errorFile = open(errorFileName, 'w')
     except:
         exit(1, 'Could not open file %s\n' % errorFileName)
-		
+                
     # Input Files
 
     try:
@@ -298,7 +298,7 @@ def init():
 # Returns: nothing
 # Assumes: nothing
 # Effects: if the processing mode is not valid, exits.
-#	   else, sets global variables
+#          else, sets global variables
 # Throws:  nothing
 
 def verifyMode():
@@ -340,7 +340,7 @@ def setPrimaryKeys():
 # Throws:   nothing
 
 def bcpFiles(
-   recordsProcessed	# number of records processed (integer)
+   recordsProcessed     # number of records processed (integer)
    ):
 
     global referenceKey
@@ -361,8 +361,8 @@ def bcpFiles(
     bcp3 = bcpCommand % (accTable, aFileName)
 
     for bcpCmd in [bcp1, bcp2, bcp3]:
-	diagFile.write('%s\n' % bcpCmd)
-	os.system(bcpCmd)
+        diagFile.write('%s\n' % bcpCmd)
+        os.system(bcpCmd)
 
     # update the max Accession ID value
     db.sql('''select * from ACC_setMax (%d)''' % (recordsProcessed), None)
@@ -400,19 +400,19 @@ def processImageFile():
         lineNum = lineNum + 1
 
         # Split the line into tokens
-        tokens = string.split(line[:-1], '\t')
+        tokens = str.split(line[:-1], '\t')
 
         try:
-	    jnum = tokens[0]
-	    fullsizeKey = tokens[1]
-	    imageClass = tokens[2]
-	    pixID = tokens[3]
-	    xdim = tokens[4]
-	    ydim = tokens[5]
-	    figureLabel = tokens[6]
-	    copyrightNote = tokens[7]
-	    imageNote = tokens[8]
-	    imageInfo = tokens[9]
+            jnum = tokens[0]
+            fullsizeKey = tokens[1]
+            imageClass = tokens[2]
+            pixID = tokens[3]
+            xdim = tokens[4]
+            ydim = tokens[5]
+            figureLabel = tokens[6]
+            copyrightNote = tokens[7]
+            imageNote = tokens[8]
+            imageInfo = tokens[9]
         except:
             exit(1, 'Invalid Line (%d): %s\n' % (lineNum, line))
 
@@ -430,89 +430,89 @@ def processImageFile():
 
         # if no errors, process
 
-	imageTypeKey = FSimageTypeKey
+        imageTypeKey = FSimageTypeKey
 
         outImageFile.write(str(imageKey) + TAB + \
-	    str(imageClassKey) + TAB + \
-	    str(imageTypeKey) + TAB + \
-	    str(referenceKey) + TAB + \
-	    TAB + \
-	    xdim + TAB + \
-	    ydim + TAB + \
-	    figureLabel + TAB + \
-	    str(createdByKey) + TAB + \
-	    str(createdByKey) + TAB + \
-	    loaddate + TAB + loaddate + CRT)
+            str(imageClassKey) + TAB + \
+            str(imageTypeKey) + TAB + \
+            str(referenceKey) + TAB + \
+            TAB + \
+            xdim + TAB + \
+            ydim + TAB + \
+            figureLabel + TAB + \
+            str(createdByKey) + TAB + \
+            str(createdByKey) + TAB + \
+            loaddate + TAB + loaddate + CRT)
 
         # MGI Accession ID for the image
 
-	mgiAccID = mgiPrefix + str(mgiKey)
+        mgiAccID = mgiPrefix + str(mgiKey)
 
-	outAccFile.write(str(accKey) + TAB + \
-	    mgiPrefix + str(mgiKey) + TAB + \
-	    mgiPrefix + TAB + \
-	    str(mgiKey) + TAB + \
-	    accLogicalDBKey + TAB + \
-	    str(imageKey) + TAB + \
-	    imageMgiTypeKey + TAB + \
-	    accPrivate + TAB + \
-	    accPreferred + TAB + \
-	    str(createdByKey) + TAB + \
-	    str(createdByKey) + TAB + \
-	    loaddate + TAB + loaddate + CRT)
+        outAccFile.write(str(accKey) + TAB + \
+            mgiPrefix + str(mgiKey) + TAB + \
+            mgiPrefix + TAB + \
+            str(mgiKey) + TAB + \
+            accLogicalDBKey + TAB + \
+            str(imageKey) + TAB + \
+            imageMgiTypeKey + TAB + \
+            accPrivate + TAB + \
+            accPreferred + TAB + \
+            str(createdByKey) + TAB + \
+            str(createdByKey) + TAB + \
+            loaddate + TAB + loaddate + CRT)
 
         accKey = accKey + 1
         mgiKey = mgiKey + 1
 
-	if pixID.find('GUDMAP') < 0 and len(pixID) > 0:
-	    outAccFile.write(str(accKey) + TAB + \
-	        pixPrefix + str(pixID) + TAB + \
-	        pixPrefix + TAB + \
-	        pixID + TAB + \
-	        pixLogicalDBKey + TAB + \
-	        str(imageKey) + TAB + \
-	        imageMgiTypeKey + TAB + \
-	        pixPrivate + TAB + \
-	        accPreferred + TAB + \
-	        str(createdByKey) + TAB + \
-	        str(createdByKey) + TAB + \
-	        loaddate + TAB + loaddate + CRT)
+        if pixID.find('GUDMAP') < 0 and len(pixID) > 0:
+            outAccFile.write(str(accKey) + TAB + \
+                pixPrefix + str(pixID) + TAB + \
+                pixPrefix + TAB + \
+                pixID + TAB + \
+                pixLogicalDBKey + TAB + \
+                str(imageKey) + TAB + \
+                imageMgiTypeKey + TAB + \
+                pixPrivate + TAB + \
+                accPreferred + TAB + \
+                str(createdByKey) + TAB + \
+                str(createdByKey) + TAB + \
+                loaddate + TAB + loaddate + CRT)
     
             accKey = accKey + 1
 
-	if len(imageInfo) > 0:
+        if len(imageInfo) > 0:
 
-	    imageLogicalDBKey, imageID = imageInfo.split('|')
+            imageLogicalDBKey, imageID = imageInfo.split('|')
 
-	    outAccFile.write(str(accKey) + TAB + \
-	        imageID + TAB + \
-	        imageID + TAB + \
-	        TAB + \
-	        imageLogicalDBKey + TAB + \
-	        str(imageKey) + TAB + \
-	        imageMgiTypeKey + TAB + \
-	        accPrivate + TAB + \
-	        accPreferred + TAB + \
-	        str(createdByKey) + TAB + \
-	        str(createdByKey) + TAB + \
-	        loaddate + TAB + loaddate + CRT)
+            outAccFile.write(str(accKey) + TAB + \
+                imageID + TAB + \
+                imageID + TAB + \
+                TAB + \
+                imageLogicalDBKey + TAB + \
+                str(imageKey) + TAB + \
+                imageMgiTypeKey + TAB + \
+                accPrivate + TAB + \
+                accPreferred + TAB + \
+                str(createdByKey) + TAB + \
+                str(createdByKey) + TAB + \
+                loaddate + TAB + loaddate + CRT)
     
             accKey = accKey + 1
 
-	# Copyrights
+        # Copyrights
 
-	if len(copyrightNote) > 0:
+        if len(copyrightNote) > 0:
             outCopyrightFile.write(mgiAccID + TAB + copyrightNote + CRT)
 
-	# Notes
+        # Notes
 
-	if len(imageNote) > 0:
+        if len(imageNote) > 0:
             outCaptionFile.write(mgiAccID + TAB + imageNote + CRT)
 
-	imagePix[pixID] = imageKey
+        imagePix[pixID] = imageKey
         imageKey = imageKey + 1
 
-    #	end of "for line in inImageFile.readlines():"
+    #   end of "for line in inImageFile.readlines():"
 
     return lineNum
 
@@ -534,31 +534,31 @@ def processImagePaneFile():
         lineNum = lineNum + 1
 
         # Split the line into tokens
-        tokens = string.split(line[:-1], '\t')
+        tokens = str.split(line[:-1], '\t')
 
         try:
-	    pixID = tokens[0]
-	    paneLabel = tokens[1]
-	    paneWidth = tokens[2]
-	    paneHeight = tokens[3]
+            pixID = tokens[0]
+            paneLabel = tokens[1]
+            paneWidth = tokens[2]
+            paneHeight = tokens[3]
         except:
             exit(1, 'Invalid Line (%d): %s\n' % (lineNum, line))
 
-	paneX = 0
-	paneY = 0
+        paneX = 0
+        paneY = 0
 
         outPaneFile.write(str(paneKey) + TAB + \
-	    str(imagePix[pixID]) + TAB + \
-	    mgi_utils.prvalue(paneLabel) + TAB + \
-	    str(paneX) + TAB + \
-	    str(paneY) + TAB + \
-	    str(paneWidth) + TAB + \
-	    str(paneHeight) + TAB + \
-	    loaddate + TAB + loaddate + CRT)
+            str(imagePix[pixID]) + TAB + \
+            mgi_utils.prvalue(paneLabel) + TAB + \
+            str(paneX) + TAB + \
+            str(paneY) + TAB + \
+            str(paneWidth) + TAB + \
+            str(paneHeight) + TAB + \
+            loaddate + TAB + loaddate + CRT)
 
         paneKey = paneKey + 1
 
-    #	end of "for line in inPaneFile.readlines():"
+    #   end of "for line in inPaneFile.readlines():"
 
     return lineNum
 
